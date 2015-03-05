@@ -10,5 +10,6 @@
     <string name="uninit">Uninitialized</string>
     <string name="generalStatusOK">Hi!\nI am feeling pretty good!.</string>
     <string name="generalStatusKO">Hi!\nI am not feeling very good!</string>
+    <string name="PhidgetStatus">Phidget Status: Connected</string>
 
 </resources>
