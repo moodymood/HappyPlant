@@ -2,14 +2,23 @@
 <resources>
 
     <string name="app_name">HappyPlant</string>
-    <string name="title_sensor_detail">Back</string>
-    <string name="currValueString">Current Value:</string>
-    <string name="reqValueString">Required Value:</string>
-    <string name="sensStatusOK">Everything seems fine here!"</string>
-    <string name="sensStatusKO">Something is wrong here!"</string>
-    <string name="uninit">Uninitialized</string>
+
+    <string name="PhidgetStatus">Phidget Status: Connected</string>
+
+
     <string name="generalStatusOK">Hi!\nI am feeling pretty good!.</string>
     <string name="generalStatusKO">Hi!\nI am not feeling very good!</string>
-    <string name="PhidgetStatus">Phidget Status: Connected</string>
+
+    <string name="sensorStatusOK">Everything seems fine!</string>
+    <string name="sensorStatusKO">Something is wrong here!"</string>
+
+    <string name="uninit">Uninitialized</string>
+
+
+    <string name="reqValueText">Required value:</string>
+    <string name="currValueText">Current value:</string>
+    <string name="action_settings">Sensor Details</string>
+    <string name="title_activity_sensor_detail">Details</string>
+
 
 </resources>

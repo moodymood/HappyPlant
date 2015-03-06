@@ -21,8 +21,12 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 public class InterfaceKitUSBExampleActivity extends Activity {
-    InterfaceKitPhidget ik;
 
+    public final int TEMP = 0;
+    public final int LIGHT = 1;
+    public final int HUM = 2;
+    InterfaceKitPhidget ik;
+    public PlantStatus plantStatus;
     TextView[] sensorsTextViews;
 
     /** Called when the activity is first created. */
@@ -31,11 +35,12 @@ public class InterfaceKitUSBExampleActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        plantStatus = new PlantStatus(10, 20, 30);
+
         sensorsTextViews = new TextView[8];
         sensorsTextViews[0] = (TextView)findViewById(R.id.sensor0);
         sensorsTextViews[1] = (TextView)findViewById(R.id.sensor1);
         sensorsTextViews[2] = (TextView)findViewById(R.id.sensor2);
-
 
 
         try
@@ -73,7 +78,7 @@ public class InterfaceKitUSBExampleActivity extends Activity {
             });
             ik.addSensorChangeListener(new SensorChangeListener() {
                 public void sensorChanged(SensorChangeEvent se) {
-                    runOnUiThread(new SensorChangeRunnable(se.getSource(), se.getIndex(), se.getValue()));
+                    runOnUiThread(new SensorChangeRunnable(se.getIndex(), se.getValue()));
                 }
             });
 
@@ -86,6 +91,7 @@ public class InterfaceKitUSBExampleActivity extends Activity {
             pe.printStackTrace();
         }
     }
+
 
     @Override
     protected void onDestroy() {
@@ -112,20 +118,6 @@ public class InterfaceKitUSBExampleActivity extends Activity {
             if(attach)
             {
                 attachedTxt.setText("Attached");
-                try {
-                    TextView nameTxt = (TextView) findViewById(R.id.nameTxt);
-                    TextView serialTxt = (TextView) findViewById(R.id.serialTxt);
-                    TextView versionTxt = (TextView) findViewById(R.id.versionTxt);
-                    TextView labelTxt = (TextView) findViewById(R.id.labelTxt);
-
-                    nameTxt.setText(phidget.getDeviceName());
-                    serialTxt.setText(Integer.toString(phidget.getSerialNumber()));
-                    versionTxt.setText(Integer.toString(phidget.getDeviceVersion()));
-                    labelTxt.setText(phidget.getDeviceLabel());
-
-                } catch (PhidgetException e) {
-                    e.printStackTrace();
-                }
             }
             else
                 attachedTxt.setText("Detached");
@@ -138,33 +130,54 @@ public class InterfaceKitUSBExampleActivity extends Activity {
     }
 
     class SensorChangeRunnable implements Runnable {
-        int sensorIndex, sensorVal, serial, pclass;
-        String name;
-        Phidget p;
-        public SensorChangeRunnable(Phidget p, int index, int val)
+        int sensorIndex, sensorVal;
+
+        public SensorChangeRunnable(int index, int val)
         {
-            this.p = p;
             this.sensorIndex = index;
             this.sensorVal = val;
 
         }
         public void run() {
 
-            if(sensorsTextViews[sensorIndex]!=null){
-                if(sensorIndex==0)
-                    sensorsTextViews[sensorIndex].setText("Temperature:" + sensorVal);
-                else if(sensorIndex==1)
-                    sensorsTextViews[sensorIndex].setText("Light:" + sensorVal);
-                if(sensorIndex==2)
-                    sensorsTextViews[sensorIndex].setText("Humidity:" + sensorVal);
+            if(sensorsTextViews[sensorIndex]!=null) {
+                if (sensorIndex == 0) {
+                    sensorsTextViews[sensorIndex].setText("Temperature:" + plantStatus.getValue(sensorIndex));
+                    plantStatus.addValue(0, sensorVal);
+                } else if (sensorIndex == 1) {
+                    sensorsTextViews[sensorIndex].setText("Light:" + plantStatus.getValue(sensorIndex));
+                    plantStatus.addValue(1, sensorVal);
+                }
+                if (sensorIndex == 2) {
+                    sensorsTextViews[sensorIndex].setText("Humidity:" + plantStatus.getValue(sensorIndex));
+                    plantStatus.addValue(2, sensorVal);
+                }
             }
         }
     }
 
 
-    public void goToMain(View view)
+    public void tempDetail(View view)
     {
-        Intent intent = new Intent(this, SensorListActivity.class);
+        Intent intent = new Intent(InterfaceKitUSBExampleActivity.this, SensorDetailActivity.class);
+        intent.putExtra("SENSOR", TEMP);
+        intent.putExtra("VALUE", plantStatus);
+        startActivity(intent);
+    }
+
+    public void lightDetail(View view)
+    {
+        Intent intent = new Intent(InterfaceKitUSBExampleActivity.this, SensorDetailActivity.class);
+        intent.putExtra("SENSOR", LIGHT);
+        intent.putExtra("VALUE", plantStatus);
+        startActivity(intent);
+    }
+
+    public void humDetail(View view)
+    {
+        Intent intent = new Intent(InterfaceKitUSBExampleActivity.this, SensorDetailActivity.class);
+        intent.putExtra("SENSOR", HUM);
+        intent.putExtra("VALUE", plantStatus);
         startActivity(intent);
     }
 }
