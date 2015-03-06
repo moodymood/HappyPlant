@@ -24,7 +24,6 @@ public class InterfaceKitUSBExampleActivity extends Activity {
     InterfaceKitPhidget ik;
 
     TextView[] sensorsTextViews;
-    CheckBox[] inputCheckBoxes;
 
     /** Called when the activity is first created. */
     @Override
@@ -37,7 +36,6 @@ public class InterfaceKitUSBExampleActivity extends Activity {
         sensorsTextViews[1] = (TextView)findViewById(R.id.sensor1);
         sensorsTextViews[2] = (TextView)findViewById(R.id.sensor2);
 
-        inputCheckBoxes = new CheckBox[8];
 
 
         try
@@ -78,11 +76,7 @@ public class InterfaceKitUSBExampleActivity extends Activity {
                     runOnUiThread(new SensorChangeRunnable(se.getSource(), se.getIndex(), se.getValue()));
                 }
             });
-            ik.addInputChangeListener(new InputChangeListener() {
-                public void inputChanged(InputChangeEvent ie) {
-                    runOnUiThread(new InputChangeRunnable(ie.getIndex(), ie.getState()));
-                }
-            });
+
             ik.openAny();
 
 
@@ -152,42 +146,21 @@ public class InterfaceKitUSBExampleActivity extends Activity {
             this.p = p;
             this.sensorIndex = index;
             this.sensorVal = val;
-            try {
-                this.name = p.getDeviceName();
-            } catch (PhidgetException e) {
-                e.printStackTrace();
-            }
-            try {
-                this.serial = p.getSerialNumber();
-            } catch (PhidgetException e) {
-                e.printStackTrace();
-            }
-            try {
-                this.pclass = p.getDeviceClass();
-            } catch (PhidgetException e) {
-                e.printStackTrace();
-            }
+
         }
         public void run() {
 
-            if(sensorsTextViews[sensorIndex]!=null)
-                sensorsTextViews[sensorIndex].setText(sensorIndex +"-a-"+sensorVal+"-b-"+name+"-c-"+serial+"-d-"+pclass);
+            if(sensorsTextViews[sensorIndex]!=null){
+                if(sensorIndex==0)
+                    sensorsTextViews[sensorIndex].setText("Temperature:" + sensorVal);
+                else if(sensorIndex==1)
+                    sensorsTextViews[sensorIndex].setText("Light:" + sensorVal);
+                if(sensorIndex==2)
+                    sensorsTextViews[sensorIndex].setText("Humidity:" + sensorVal);
+            }
         }
     }
 
-    class InputChangeRunnable implements Runnable {
-        int index;
-        boolean val;
-        public InputChangeRunnable(int index, boolean val)
-        {
-            this.index = index;
-            this.val = val;
-        }
-        public void run() {
-            if(inputCheckBoxes[index]!=null)
-                inputCheckBoxes[index].setChecked(val);
-        }
-    }
 
     public void goToMain(View view)
     {
