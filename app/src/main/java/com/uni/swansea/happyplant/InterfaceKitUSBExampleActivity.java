@@ -225,7 +225,6 @@ public class InterfaceKitUSBExampleActivity extends Activity {
     public void tempDetail(View view)
     {
 
-        int i = view.getId();
         Intent intent = new Intent(InterfaceKitUSBExampleActivity.this, SensorDetailActivity.class);
         intent.putExtra("SENSOR", PlantStatus.TEMP);
         intent.putExtra("VALUE", plantStatus);

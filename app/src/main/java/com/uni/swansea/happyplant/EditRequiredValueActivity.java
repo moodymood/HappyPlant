@@ -14,6 +14,7 @@ public class EditRequiredValueActivity extends ActionBarActivity {
 
     public PlantStatus plantStatus;
     public int CURR_SENSOR;
+    NumberPicker minNumberPicker, maxNumberPicker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +27,12 @@ public class EditRequiredValueActivity extends ActionBarActivity {
             refreshHeader();
             refreshEditValues();
         }
+    }
+
+    public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+
+
+
     }
 
 
@@ -71,15 +78,30 @@ public class EditRequiredValueActivity extends ActionBarActivity {
     }
 
     public void refreshEditValues() {
-        NumberPicker minNumberPicker = (NumberPicker) findViewById(R.id.minReqValue);
-        minNumberPicker.setMaxValue(100);
+        minNumberPicker = (NumberPicker) findViewById(R.id.minReqValue);
+        minNumberPicker.setMaxValue(plantStatus.maxReqValues[CURR_SENSOR]);
         minNumberPicker.setMinValue(0);
         minNumberPicker.setValue(plantStatus.minReqValues[CURR_SENSOR]);
+        minNumberPicker.setOnValueChangedListener( new NumberPicker.
+                OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                maxNumberPicker.setMinValue(newVal);
+            }
+        });
 
-        NumberPicker maxNumberPicker = (NumberPicker) findViewById(R.id.maxReqValue);
+        maxNumberPicker = (NumberPicker) findViewById(R.id.maxReqValue);
         maxNumberPicker.setMaxValue(100);
-        maxNumberPicker.setMinValue(0);
+        maxNumberPicker.setMinValue(plantStatus.minReqValues[CURR_SENSOR]);
         maxNumberPicker.setValue(plantStatus.maxReqValues[CURR_SENSOR]);
+        maxNumberPicker.setOnValueChangedListener( new NumberPicker.
+                OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                minNumberPicker.setMaxValue(newVal);
+            }
+        });
+
 
         TextView minUnitText = (TextView) findViewById(R.id.unitMinText);
         minUnitText.setText(plantStatus.unit[CURR_SENSOR]);
