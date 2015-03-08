@@ -1,104 +1,228 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:layout_marginTop="10dp"
     android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
     android:weightSum="1">
 
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
+    // General Status Image +  Phidget Connection + Plant general message
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_height="100dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp">
+        android:layout_width="fill_parent"
+        android:layout_weight="0.86">
 
-        <ImageView
-            android:layout_height="match_parent"
-            android:layout_width="80dp"
-            android:id="@+id/imageView"
-            android:src="@drawable/sad_status" />
+        // Phidget connection
+        <RelativeLayout
+            android:orientation="horizontal"
+            android:layout_height="34dp"
+            android:layout_width="fill_parent">
+            <TextView android:id="@+id/phidgetStatusText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:text="@string/phidgetStatusText"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/phidgetStatusImg"
+                android:layout_toStartOf="@+id/phidgetStatusImg">
+            </TextView>
+
+            <ImageView android:id="@+id/phidgetStatusImg"
+                android:layout_height="30dp"
+                android:layout_width="30dp"
+                android:src="@drawable/disconnected"
+                android:layout_gravity="right"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="25dp"
+                android:layout_marginLeft="10dp">
+            </ImageView>
+        </RelativeLayout>
 
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:orientation="vertical"
+
+        // Phidget connection + general status message
+        <RelativeLayout
+            android:orientation="horizontal"
+            android:layout_height="fill_parent"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+            android:layout_marginLeft="10dp"
+            android:weightSum="1">
 
-            <LinearLayout
-                android:layout_height="40dp"
-                android:layout_width="fill_parent"
-                android:orientation="horizontal"
-                android:id="@+id/linearLayout1"
-                android:layout_marginLeft="15dp">
-                <TextView
-                    android:text="Status: "
-                    android:layout_width="wrap_content"
-                    android:id="@+id/textView1"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium">
-                </TextView>
-                <TextView
-                    android:text="Detached"
-                    android:layout_width="match_parent"
-                    android:id="@+id/attachedTxt"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium">
-                </TextView>
-            </LinearLayout>
+            // General Status Image
+            <ImageView android:id="@+id/generalStatusImg"
+                android:layout_height="111dp"
+                android:layout_width="73dp"
+                android:src="@drawable/ic_launcher"
+                android:layout_marginLeft="29dp"
+                android:layout_marginStart="29dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginBottom="35dp" />
 
-            <TextView
-                android:layout_height="fill_parent"
-                android:layout_width="match_parent"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/generalStatusKO"
-                android:id="@+id/generalStatusText"
-                android:layout_marginLeft="15dp" />
-        </LinearLayout>
+            <TextView android:id="@+id/plantStatusMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                android:text="@string/plantStatusMessageOK"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="29dp"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/generalStatusImg"
+                android:layout_toEndOf="@+id/generalStatusImg"
+                android:layout_marginStart="29dp"
+                android:layout_marginTop="8dp" />
+
+        </RelativeLayout>
     </LinearLayout>
 
 
-
-
+    // List of the three sensors
     <LinearLayout
         android:orientation="vertical"
         android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
-        android:id="@+id/linearLayout3">
+        android:layout_width="fill_parent">
 
-        <View android:layout_width="fill_parent" android:layout_height="0.2dp" android:id="@+id/separator0" android:visibility="visible" android:background="#9f222222"/>
-        <TextView
-            android:id="@+id/sensor0"
-            android:text="Unk."
+        <View android:id="@+id/separator0" android:layout_width="fill_parent" android:layout_height="0.2dp"  android:visibility="visible" android:background="#9f222222"/>
+
+        // Temperature
+        <RelativeLayout
+            android:orientation="horizontal"
+            android:layout_height="60dp"
+            android:layout_width="fill_parent"
             android:onClick="tempDetail"
-            android:layout_width="fill_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="10dp"
-            android:textAppearance="?android:attr/textAppearanceMedium">
-        </TextView>
-        <View android:layout_width="fill_parent" android:layout_height="0.2dp" android:id="@+id/separator1" android:visibility="visible" android:background="#9f222222"/>
-        <TextView
-            android:text="Unk."
-            android:onClick="lightDetail"
-            android:layout_width="fill_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="10dp"
-            android:id="@+id/sensor1"
-            android:textAppearance="?android:attr/textAppearanceMedium">
-        </TextView>
-        <View android:layout_width="fill_parent" android:layout_height="0.2dp" android:id="@+id/separator2" android:visibility="visible" android:background="#9f222222"/>
-        <TextView
-                android:text="Unk."
-                android:onClick="humDetail"
-                android:layout_width="fill_parent"
-                android:layout_height="60dp"
-                android:layout_marginTop="10dp"
-                android:id="@+id/sensor2"
-                android:textAppearance="?android:attr/textAppearanceMedium">
-        </TextView>
-        <View android:layout_width="fill_parent" android:layout_height="0.2dp" android:id="@+id/separator3" android:visibility="visible" android:background="#9f222222"/>
+            android:weightSum="1">
+            <ImageView android:id="@+id/tempStatusImg"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical|left"
+                android:layout_alignTop="@+id/tempLabelText"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="25dp"
+                android:layout_marginStart="25dp"
+                android:src="@drawable/green_led"/>
+            <TextView android:id="@+id/tempLabelText"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/tempStatusImg"
+                android:layout_toEndOf="@+id/tempStatusImg"
+                android:layout_marginLeft="24dp"
+                android:layout_marginStart="24dp"
+                android:text="@string/tempLabelText">
+            </TextView>
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/next"
+                android:layout_gravity="center_vertical"
+                android:layout_alignTop="@+id/tempLabelText"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="29dp"
+                android:layout_marginEnd="29dp" />
+        </RelativeLayout>
 
-</LinearLayout>
+
+        <View android:id="@+id/separator1" android:layout_width="fill_parent" android:layout_height="0.2dp"  android:visibility="visible" android:background="#9f222222"/>
+
+        // Light
+        <RelativeLayout
+            android:orientation="horizontal"
+            android:layout_height="60dp"
+            android:layout_width="fill_parent"
+            android:onClick="lightDetail"
+            android:weightSum="1">
+            <ImageView android:id="@+id/lightStatusImg"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical|left"
+                android:layout_marginLeft="25dp"
+                android:layout_marginStart="25dp"
+                android:src="@drawable/green_led"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+            <TextView android:id="@+id/lightLabelText"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_marginLeft="24dp"
+                android:layout_marginStart="24dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/lightStatusImg"
+                android:layout_toEndOf="@+id/lightStatusImg"
+                android:text="@string/lightLabelText">
+            </TextView>
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/next"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="29dp"
+                android:layout_marginEnd="29dp"
+                android:id="@+id/imageView"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+        </RelativeLayout>
+
+
+        <View android:id="@+id/separator2" android:layout_width="fill_parent" android:layout_height="0.2dp"  android:visibility="visible" android:background="#9f222222"/>
+
+        // Humidity
+        <RelativeLayout
+            android:orientation="horizontal"
+            android:layout_height="60dp"
+            android:layout_width="fill_parent"
+            android:onClick="humDetail"
+            android:weightSum="1">
+            <ImageView android:id="@+id/humStatusImg"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/green_led"
+                android:layout_gravity="center_vertical|left"
+                android:layout_alignTop="@+id/humLabelText"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="25dp"
+                android:layout_marginStart="25dp" />
+            <TextView android:id="@+id/humLabelText"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/humLabelText"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/humStatusImg"
+                android:layout_toEndOf="@+id/humStatusImg"
+                android:layout_marginLeft="24dp"
+                android:layout_marginStart="24dp">
+            </TextView>
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/next"
+                android:layout_gravity="center_vertical"
+                android:layout_alignTop="@+id/humLabelText"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="29dp"
+                android:layout_marginEnd="29dp" />
+        </RelativeLayout>
+
+        <View android:id="@+id/separator3"  android:layout_width="fill_parent" android:layout_height="0.2dp" android:visibility="visible" android:background="#9f222222"/>
+    </LinearLayout>
+
+
 </LinearLayout>

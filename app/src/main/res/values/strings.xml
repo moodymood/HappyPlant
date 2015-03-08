@@ -2,23 +2,27 @@
 <resources>
 
     <string name="app_name">HappyPlant</string>
+    <string name="action_settings">action_settings</string>
 
-    <string name="PhidgetStatus">Phidget Status: Connected</string>
+    //  Main    <string name="phidgetStatusText">Phidget connection:</string>
+    <string name="plantStatusMessageOK">Hi,\nI am feeling very good!</string>
+    <string name="plantStatusMessageKO">Oh oh,\nI am not feeling very good!</string>
+    <string name="sensorUnknown">Unknow value</string>
 
+    // Common    <string name="tempLabelText">Temperature</string>
+    <string name="lightLabelText">Light</string>
+    <string name="humLabelText">Humidity</string>
 
-    <string name="generalStatusOK">Hi!\nI am feeling pretty good!.</string>
-    <string name="generalStatusKO">Hi!\nI am not feeling very good!</string>
-
-    <string name="sensorStatusOK">Everything seems fine!</string>
-    <string name="sensorStatusKO">Something is wrong here!"</string>
-
-    <string name="uninit">Uninitialized</string>
-
-
-    <string name="reqValueText">Required value:</string>
-    <string name="currValueText">Current value:</string>
-    <string name="action_settings">Sensor Details</string>
+    //Sensor Details
     <string name="title_activity_sensor_detail">Details</string>
+    <string name="sensorValuesText">The <b>current</b> value is : CURR.\nThe <b>minimum</b> value required is MIN and the <b>maximum</b> is MAX.</string>
+    <string name="uninit">Uninitialized</string>
+    <string name="graph">History (last 24h)</string>
+    <string name="title_activity_edit_required_value">EditRequiredValueActivity</string>
+    <string name="edit">edit</string>
 
+    // Edit
+    <string name="minReqValueText">Minimum value allowed: </string>
+    <string name="maxReqValueText">Maximum value allowed:</string>
 
 </resources>

@@ -1,57 +1,104 @@
 package com.uni.swansea.happyplant;
 
+import android.annotation.TargetApi;
+import android.app.ActionBar;
+import android.content.Intent;
+import android.os.Build;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuItem;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
 public class SensorDetailActivity extends ActionBarActivity {
 
-    public final int TEMP = 0;
-    public final int LIGHT = 1;
-    public final int HUM = 2;
-
     public PlantStatus plantStatus;
     public int CURR_SENSOR;
 
-    @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensor_detail);
 
-        Bundle extras = getIntent().getExtras();
+        // Check if the intent has extra data
+        // and update the plantStatus variable
+        if(getDataFromIntent(getIntent())) {
+            refreshHeader();
+            refreshSensorValues();
+        }
+    }
+
+
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK){
+                if(getDataFromIntent(data)){
+                    refreshHeader();
+                    refreshSensorValues();
+                }
+            }
+            if (resultCode == RESULT_CANCELED) {
+                //Do nothing?
+            }
+        }
+    }
+
+
+    // Get the current sensor values and update the status of the plant
+    public boolean getDataFromIntent(Intent intent) {
+        Bundle extras = intent.getExtras();
         if (extras != null) {
             CURR_SENSOR = (int) extras.get("SENSOR");
             plantStatus = (PlantStatus) extras.getSerializable("VALUE");
-        }
-        TextView currValue = (TextView) findViewById(R.id.currValue);
-        currValue.setText(String.valueOf(plantStatus.getValue(CURR_SENSOR)));
-        TextView reqValue = (TextView) findViewById(R.id.reqValue);
-        reqValue.setText(String.valueOf(plantStatus.reqValues[CURR_SENSOR]));
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_sensor_detail, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
             return true;
         }
-
-        return super.onOptionsItemSelected(item);
+        else
+            return false;
     }
+
+
+    // Refresh header if values has been changed
+    public void refreshHeader(){
+        ImageView sensorStatusImg = (ImageView) findViewById(R.id.sensorStatusImg);
+        if (plantStatus.sensorIsOK(CURR_SENSOR))
+            sensorStatusImg.setImageResource(R.drawable.green_led);
+        else
+            sensorStatusImg.setImageResource(R.drawable.red_led);
+
+        TextView sensorLabelText = (TextView) findViewById(R.id.sensorLabelText);
+        if (CURR_SENSOR == PlantStatus.TEMP)
+            sensorLabelText.setText(R.string.tempLabelText);
+        else if (CURR_SENSOR == PlantStatus.HUM)
+            sensorLabelText.setText(R.string.humLabelText);
+        else if (CURR_SENSOR == PlantStatus.LIGHT)
+            sensorLabelText.setText(R.string.lightLabelText);
+    }
+
+    // Refresh value if they has been changed
+    public void refreshSensorValues(){
+        TextView sensorValuesText = (TextView) findViewById(R.id.sensorValuesText);
+        String temp = getResources().getString(R.string.sensorValuesText);
+        temp = temp.replaceFirst("CURR", String.valueOf(plantStatus.getCurrValue(CURR_SENSOR)));
+        temp = temp.replaceFirst("MIN", String.valueOf(plantStatus.minReqValues[CURR_SENSOR]));
+        temp = temp.replaceFirst("MAX", String.valueOf(plantStatus.maxReqValues[CURR_SENSOR]));
+        sensorValuesText.setText(temp);
+    }
+
+    public void refreshGraph(){
+
+    }
+    
+    // Intent for changing required values
+    public void editRequiredValue(View view)
+    {
+        Intent intent = new Intent(SensorDetailActivity.this, EditRequiredValueActivity.class);
+        intent.putExtra("SENSOR", CURR_SENSOR);
+        intent.putExtra("VALUE", plantStatus);
+        startActivityForResult(intent,1);
+    }
+
 }
