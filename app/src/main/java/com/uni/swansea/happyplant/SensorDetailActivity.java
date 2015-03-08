@@ -12,6 +12,11 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.jjoe64.graphview.DefaultLabelFormatter;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
+
 
 public class SensorDetailActivity extends ActionBarActivity {
 
@@ -28,9 +33,17 @@ public class SensorDetailActivity extends ActionBarActivity {
         if(getDataFromIntent(getIntent())) {
             refreshHeader();
             refreshSensorValues();
+            refreshGraph();
         }
     }
 
+    public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("SENSOR", CURR_SENSOR);
+        returnIntent.putExtra("VALUE", plantStatus);
+        setResult(RESULT_OK, returnIntent);
+        finish();
+    }
 
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -70,26 +83,76 @@ public class SensorDetailActivity extends ActionBarActivity {
             sensorStatusImg.setImageResource(R.drawable.red_led);
 
         TextView sensorLabelText = (TextView) findViewById(R.id.sensorLabelText);
-        if (CURR_SENSOR == PlantStatus.TEMP)
-            sensorLabelText.setText(R.string.tempLabelText);
-        else if (CURR_SENSOR == PlantStatus.HUM)
-            sensorLabelText.setText(R.string.humLabelText);
-        else if (CURR_SENSOR == PlantStatus.LIGHT)
-            sensorLabelText.setText(R.string.lightLabelText);
+        sensorLabelText.setText(plantStatus.labels[CURR_SENSOR]);
     }
 
     // Refresh value if they has been changed
     public void refreshSensorValues(){
-        TextView sensorValuesText = (TextView) findViewById(R.id.sensorValuesText);
-        String temp = getResources().getString(R.string.sensorValuesText);
-        temp = temp.replaceFirst("CURR", String.valueOf(plantStatus.getCurrValue(CURR_SENSOR)));
-        temp = temp.replaceFirst("MIN", String.valueOf(plantStatus.minReqValues[CURR_SENSOR]));
-        temp = temp.replaceFirst("MAX", String.valueOf(plantStatus.maxReqValues[CURR_SENSOR]));
-        sensorValuesText.setText(temp);
+
+        TextView sensorCurrValuesText = (TextView) findViewById(R.id.sensorCurrValuesText);
+        String temp = getResources().getString(R.string.sensorCurrValuesText);
+        temp = temp.replace("CURR", String.valueOf(plantStatus.getCurrValue(CURR_SENSOR)));
+        temp = temp.replace("-UNIT-", plantStatus.unit[CURR_SENSOR]);
+        sensorCurrValuesText.setText(temp);
+
+        TextView sensorReqValuesText = (TextView) findViewById(R.id.sensorReqValuesText);
+        temp = getResources().getString(R.string.sensorReqValuesText);
+        temp = temp.replace("MIN", String.valueOf(plantStatus.minReqValues[CURR_SENSOR]));
+        temp = temp.replace("MAX", String.valueOf(plantStatus.maxReqValues[CURR_SENSOR]));
+        temp = temp.replace("-UNIT-", plantStatus.unit[CURR_SENSOR]);
+        sensorReqValuesText.setText(temp);
+
+
     }
 
     public void refreshGraph(){
 
+        int currHour = plantStatus.getCurrentHour();
+        int[] sensorValues = plantStatus.sensorsMap.get(CURR_SENSOR);
+
+        GraphView graph1 = (GraphView) findViewById(R.id.graph1);
+        GraphView graph2 = (GraphView) findViewById(R.id.graph2);
+
+        DataPoint[] dp1 = new DataPoint[24];
+        DataPoint[] dp2 = new DataPoint[24];
+
+
+        for(int i = 0; i<currHour; i++){
+            dp1[i] = new DataPoint(i,0);
+        }
+        for(int i = currHour; i<24; i++){
+            dp1[i] = new DataPoint(i,sensorValues[i]);
+        }
+
+        for(int i = 0; i<currHour; i++){
+            dp2[i] = new DataPoint(i,sensorValues[i]);
+        }
+        for(int i = currHour; i<24; i++){
+            dp2[i] = new DataPoint(i,0);
+        }
+
+        LineGraphSeries<DataPoint> series1 = new LineGraphSeries<>(dp1);
+        LineGraphSeries<DataPoint> series2 = new LineGraphSeries<>(dp2);
+
+        graph1.getGridLabelRenderer().setNumHorizontalLabels(24);
+        graph1.getGridLabelRenderer().setTextSize(25);
+        graph1.getViewport().setXAxisBoundsManual(true);
+        graph1.getViewport().setMinX(0);
+        graph1.getViewport().setMaxX(23);
+
+        graph2.getGridLabelRenderer().setNumHorizontalLabels(24);
+        graph2.getGridLabelRenderer().setTextSize(25);
+        graph2.getViewport().setXAxisBoundsManual(true);
+        graph2.getViewport().setMinX(0);
+        graph2.getViewport().setMaxX(23);
+
+
+
+        graph1.setTitle("Yesterday");
+        graph2.setTitle("Today");
+
+        graph1.addSeries(series1);
+        graph2.addSeries(series2);
     }
     
     // Intent for changing required values

@@ -3,11 +3,10 @@ package com.uni.swansea.happyplant;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 
 
@@ -21,42 +20,21 @@ public class EditRequiredValueActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_required_value);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            CURR_SENSOR = (int) extras.get("SENSOR");
-            plantStatus = (PlantStatus) extras.getSerializable("VALUE");
+        // Check if the intent has extra data
+        // and update the plantStatus variable
+        if(getDataFromIntent(getIntent())) {
+            refreshHeader();
+            refreshEditValues();
         }
-
-        ImageView sensorStatusImg = (ImageView) findViewById(R.id.sensorStatusImg);
-        if(plantStatus.sensorIsOK(CURR_SENSOR))
-            sensorStatusImg.setImageResource(R.drawable.green_led);
-        else
-            sensorStatusImg.setImageResource(R.drawable.red_led);
-
-        TextView sensorLabelText = (TextView) findViewById(R.id.sensorLabelText);
-        if(CURR_SENSOR == PlantStatus.TEMP)
-            sensorLabelText.setText(R.string.tempLabelText);
-        else if(CURR_SENSOR == PlantStatus.HUM)
-            sensorLabelText.setText(R.string.humLabelText);
-        else if(CURR_SENSOR == PlantStatus.LIGHT)
-            sensorLabelText.setText(R.string.lightLabelText);
-
-        EditText minReqValueText = (EditText) findViewById(R.id.minReqValue);
-        minReqValueText.setText(String.valueOf(plantStatus.minReqValues[CURR_SENSOR]));
-
-        EditText maxReqValueText = (EditText) findViewById(R.id.maxReqValue);
-        maxReqValueText.setText(String.valueOf(plantStatus.maxReqValues[CURR_SENSOR]));
-
     }
 
 
-
     public void saveNewValues(View view){
-        EditText newMinReqValueText = (EditText) findViewById(R.id.minReqValue);
-        plantStatus.minReqValues[CURR_SENSOR] = Integer.parseInt(newMinReqValueText.getText().toString());
+        NumberPicker minNumberPicker = (NumberPicker) findViewById(R.id.minReqValue);
+        plantStatus.minReqValues[CURR_SENSOR] = minNumberPicker.getValue();
 
-        EditText newMaxReqValueText = (EditText) findViewById(R.id.maxReqValue);
-        plantStatus.maxReqValues[CURR_SENSOR] = Integer.parseInt(newMaxReqValueText.getText().toString());
+        NumberPicker maxNumberPicker = (NumberPicker) findViewById(R.id.maxReqValue);
+        plantStatus.maxReqValues[CURR_SENSOR] = maxNumberPicker.getValue();
 
 
         Intent returnIntent = new Intent();
@@ -65,5 +43,48 @@ public class EditRequiredValueActivity extends ActionBarActivity {
         setResult(RESULT_OK,returnIntent);
         finish();
 
+    }
+
+
+    public boolean getDataFromIntent(Intent intent) {
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            CURR_SENSOR = (int) extras.get("SENSOR");
+            plantStatus = (PlantStatus) extras.getSerializable("VALUE");
+            return true;
+        }
+        else
+            return false;
+    }
+
+
+    // Refresh header if values has been changed
+    public void refreshHeader(){
+        ImageView sensorStatusImg = (ImageView) findViewById(R.id.sensorStatusImg);
+        if (plantStatus.sensorIsOK(CURR_SENSOR))
+            sensorStatusImg.setImageResource(R.drawable.green_led);
+        else
+            sensorStatusImg.setImageResource(R.drawable.red_led);
+
+        TextView sensorLabelText = (TextView) findViewById(R.id.sensorLabelText);
+        sensorLabelText.setText(plantStatus.labels[CURR_SENSOR]);
+    }
+
+    public void refreshEditValues() {
+        NumberPicker minNumberPicker = (NumberPicker) findViewById(R.id.minReqValue);
+        minNumberPicker.setMaxValue(100);
+        minNumberPicker.setMinValue(0);
+        minNumberPicker.setValue(plantStatus.minReqValues[CURR_SENSOR]);
+
+        NumberPicker maxNumberPicker = (NumberPicker) findViewById(R.id.maxReqValue);
+        maxNumberPicker.setMaxValue(100);
+        maxNumberPicker.setMinValue(0);
+        maxNumberPicker.setValue(plantStatus.maxReqValues[CURR_SENSOR]);
+
+        TextView minUnitText = (TextView) findViewById(R.id.unitMinText);
+        minUnitText.setText(plantStatus.unit[CURR_SENSOR]);
+
+        TextView maxUnitText = (TextView) findViewById(R.id.unitMaxText);
+        maxUnitText.setText(plantStatus.unit[CURR_SENSOR]);
     }
 }

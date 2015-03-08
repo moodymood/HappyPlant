@@ -224,7 +224,7 @@ public class InterfaceKitUSBExampleActivity extends Activity {
     // Intent methods, called when the user touch a specific sensor
     public void tempDetail(View view)
     {
-        String s = view.toString();
+
         int i = view.getId();
         Intent intent = new Intent(InterfaceKitUSBExampleActivity.this, SensorDetailActivity.class);
         intent.putExtra("SENSOR", PlantStatus.TEMP);

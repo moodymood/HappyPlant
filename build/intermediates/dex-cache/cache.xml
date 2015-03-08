@@ -2,6 +2,13 @@
 <items version="2" >
 
     <item
+        jar="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/pre-dexed/debug/classes-bd402f2877dc218994dbf404dacf113f6b946360.jar" />
+    </item>
+    <item
         jar="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/libs/internal_impl-21.0.3.jar"
         jumboMode="false"
         revision="21.1.2"
@@ -16,13 +23,6 @@
         <dex dex="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.3-b17a2f183dc7a303c4ddff4aa0858736f10a3c03.jar" />
     </item>
     <item
-        jar="/home/moody/AndroidStudioProjects/HappyPlant/app/libs/phidget21.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="46cfd6dce8f0db87a4fe3b42a49816b814209aa3">
-        <dex dex="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/pre-dexed/debug/phidget21-59bed5b50f493d3b83f63d242b8585eb326d93b9.jar" />
-    </item>
-    <item
         jar="/home/moody/AndroidStudioProjects/HappyPlant/app/libs/PhidgetsUSB.jar"
         jumboMode="false"
         revision="21.1.2"
@@ -30,11 +30,18 @@
         <dex dex="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/pre-dexed/debug/PhidgetsUSB-cf131fa3d04d3bc4a7d10555774d159e190a8ad2.jar" />
     </item>
     <item
-        jar="/home/moody/AndroidStudioProjects/HappyPlant/app/libs/x86/libphidget21.so"
+        jar="/home/moody/AndroidStudioProjects/HappyPlant/app/libs/phidget21.jar"
         jumboMode="false"
         revision="21.1.2"
-        sha1="74322ab6cf129f180b830c8a74bef2b49de367ca">
-        <dex dex="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/pre-dexed/debug/libphidget21-cf2d348e33fc4ea1174f4dd6c6b423fad51deb15.jar" />
+        sha1="46cfd6dce8f0db87a4fe3b42a49816b814209aa3">
+        <dex dex="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/pre-dexed/debug/phidget21-59bed5b50f493d3b83f63d242b8585eb326d93b9.jar" />
+    </item>
+    <item
+        jar="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/exploded-aar/com.jjoe64/graphview/4.0.0/classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="ae24ad61a573cd1faf8261f5ec6d8f0cb58ddaad">
+        <dex dex="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/pre-dexed/debug/classes-292b5658cda870937c7d5debc1bb5dbb84d2d2b8.jar" />
     </item>
     <item
         jar="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/classes.jar"
@@ -42,13 +49,6 @@
         revision="21.1.2"
         sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
         <dex dex="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/pre-dexed/debug/classes-aee1a92657da5ed2fae3591b9cc2269679f246bf.jar" />
-    </item>
-    <item
-        jar="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/classes.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
-        <dex dex="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/pre-dexed/debug/classes-bd402f2877dc218994dbf404dacf113f6b946360.jar" />
     </item>
 
 </items>

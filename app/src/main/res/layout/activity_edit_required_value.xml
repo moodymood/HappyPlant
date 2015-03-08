@@ -7,6 +7,8 @@
     android:layout_marginRight="16dp"
     android:weightSum="1">
 
+
+    // Header
     <LinearLayout
         android:orientation="horizontal"
         android:layout_height="60dp"
@@ -28,52 +30,79 @@
         </TextView>
     </LinearLayout>
 
-    <View android:id="@+id/separator5"  android:layout_width="fill_parent" android:layout_height="0.7dp" android:layout_marginBottom="20dp" android:visibility="visible" android:background="#9f222222"/>
+    <View android:id="@+id/separator5"  android:layout_width="fill_parent" android:layout_height="0.7dp" android:layout_marginBottom="10dp" android:visibility="visible" android:background="#9f222222"/>
 
+
+    //Wrap edit value
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView android:id="@+id/minReqValueText"
-            android:layout_width="170dp"
-            android:layout_height="wrap_content"
-            android:text="@string/minReqValueText"
-            android:layout_gravity="center_vertical" />
+        // Minimum
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
-        <EditText android:id="@+id/minReqValue"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:inputType="number" />
+            <TextView android:id="@+id/minReqValueText"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:text="@string/minReqValueText"
+                android:layout_gravity="center_vertical"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
+            <NumberPicker android:id="@+id/minReqValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleX="0.8"
+                android:scaleY="0.8"/>
+
+            <TextView android:id="@+id/unitMinText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+        </LinearLayout>
+
+
+        // Maximum
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="60dp">
+
+            <TextView android:id="@+id/maxReqValueText"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:text="@string/maxReqValueText"
+                android:layout_gravity="center_vertical"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+            <NumberPicker android:id="@+id/maxReqValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleX="0.8"
+                android:scaleY="0.8"/>
+
+            <TextView android:id="@+id/unitMaxText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+        </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView android:id="@+id/maxReqValueText"
-            android:layout_width="170dp"
-            android:layout_height="wrap_content"
-            android:text="@string/maxReqValueText"
-            android:layout_gravity="center_vertical" />
-
-        <EditText android:id="@+id/maxReqValue"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:inputType="number" />
-
-    </LinearLayout>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Save"
         android:id="@+id/save"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="20dp"
         android:onClick="saveNewValues"/>
 
 

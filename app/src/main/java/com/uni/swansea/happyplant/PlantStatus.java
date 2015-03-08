@@ -16,6 +16,8 @@ public class PlantStatus implements Serializable {
     public Map<Integer, int[]> sensorsMap;
     public int[] minReqValues;
     public int[] maxReqValues;
+    public String[] unit;
+    public String[] labels;
 
     public PlantStatus(){
 
@@ -28,12 +30,20 @@ public class PlantStatus implements Serializable {
         maxReqValues = new int[3];
         initMax(5,5,5);
 
+        unit = new String[3];
+        initUnit("C°", "Lux", "%");
+
+        labels = new String[3];
+        initLabels("Temperature", "Light", "Humidity");
+
     }
 
     public void addValue(int sensor, int value){
-        int[] temp = sensorsMap.get(sensor);
-        temp[getCurrentHour()]=value;
-        sensorsMap.put(sensor,temp);
+        // Convert the value before storing
+        int convertedValue = convertValue(sensor, value);
+        int[] values = sensorsMap.get(sensor);
+        values[getCurrentHour()]= convertedValue;
+        sensorsMap.put(sensor,values);
     }
 
     public int getCurrValue(int sensor){
@@ -50,6 +60,22 @@ public class PlantStatus implements Serializable {
 
     }
 
+    // Convert the value according to the sensor
+    public int convertValue(int sensor, int value){
+        // Temperature (C°) = (Sensor value * 0.2222) - 61.111
+        if(sensor == TEMP){
+            return (int) Math.round((value * 0.2222) - 61.111);
+        }
+        // Light (Lux) = (m * Sensor value) + b
+        else if(sensor == LIGHT){
+            return (int) Math.round((1.478777 * value) +  33.67076);
+        }
+        // Humidity (RH%) = (Sensor value * 0.1906) - 40.2
+        else{
+            return (int) Math.round((value * 0.1906) - 40.2);
+        }
+    }
+
 
     // Initialize the StatusPlant structure
     public void initMap(){
@@ -57,9 +83,9 @@ public class PlantStatus implements Serializable {
         int[] temp2 = new int[24];
         int[] temp3 = new int[24];
         for(int i = 0; i<24; i++){
-            temp1[i] = 0;
-            temp2[i] = 10;
-            temp3[i] = 20;
+            temp1[i] = (int) (Math.random() * 30);
+            temp2[i] = (int) (Math.random() * 20);
+            temp3[i] = (int) (Math.random() * 100);
         }
         sensorsMap.put(TEMP,temp1);
         sensorsMap.put(LIGHT,temp2);
@@ -77,6 +103,18 @@ public class PlantStatus implements Serializable {
         maxReqValues[TEMP] = temp;
         maxReqValues[LIGHT] = light;
         maxReqValues[HUM] = hum;
+    }
+
+    public void initUnit(String temp, String light, String hum) {
+        unit[TEMP] = temp;
+        unit[LIGHT] = light;
+        unit[HUM] = hum;
+    }
+
+    public void initLabels(String temp, String light, String hum) {
+        labels[TEMP] = temp;
+        labels[LIGHT] = light;
+        labels[HUM] = hum;
     }
 
     public boolean sensorIsOK(int sensor){

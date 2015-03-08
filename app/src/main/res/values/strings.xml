@@ -15,14 +15,15 @@
 
     //Sensor Details
     <string name="title_activity_sensor_detail">Details</string>
-    <string name="sensorValuesText">The <b>current</b> value is : CURR.\nThe <b>minimum</b> value required is MIN and the <b>maximum</b> is MAX.</string>
+    <string name="sensorCurrValuesText">The <b>current</b> value is:\n   CURR-UNIT-</string>
+    <string name="sensorReqValuesText">The value must be between:\n   [MIN-UNIT-, MAX-UNIT-]</string>
     <string name="uninit">Uninitialized</string>
-    <string name="graph">History (last 24h)</string>
     <string name="title_activity_edit_required_value">EditRequiredValueActivity</string>
     <string name="edit">edit</string>
 
     // Edit
-    <string name="minReqValueText">Minimum value allowed: </string>
-    <string name="maxReqValueText">Maximum value allowed:</string>
+    <string name="minReqValueText">Select the new\n<b>minimum</b> value\nallowed: </string>
+    <string name="maxReqValueText">Select the new\n<b>maximum</b> value\nallowed: </string>
+
 
 </resources>
