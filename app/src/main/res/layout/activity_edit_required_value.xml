@@ -1,0 +1,80 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/sensor_detail_container"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:weightSum="1">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_height="60dp"
+        android:layout_width="fill_parent"
+        android:weightSum="1">
+        <ImageView android:id="@+id/sensorStatusImg"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/green_led"
+            android:layout_gravity="center_vertical|left" />
+        <TextView android:id="@+id/sensorLabelText"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.25"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/tempLabelText">
+        </TextView>
+    </LinearLayout>
+
+    <View android:id="@+id/separator5"  android:layout_width="fill_parent" android:layout_height="0.7dp" android:layout_marginBottom="20dp" android:visibility="visible" android:background="#9f222222"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView android:id="@+id/minReqValueText"
+            android:layout_width="170dp"
+            android:layout_height="wrap_content"
+            android:text="@string/minReqValueText"
+            android:layout_gravity="center_vertical" />
+
+        <EditText android:id="@+id/minReqValue"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:inputType="number" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView android:id="@+id/maxReqValueText"
+            android:layout_width="170dp"
+            android:layout_height="wrap_content"
+            android:text="@string/maxReqValueText"
+            android:layout_gravity="center_vertical" />
+
+        <EditText android:id="@+id/maxReqValue"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:inputType="number" />
+
+    </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:id="@+id/save"
+        android:layout_marginTop="50dp"
+        android:onClick="saveNewValues"/>
+
+
+</LinearLayout>
