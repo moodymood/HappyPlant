@@ -29,11 +29,6 @@ public class EditRequiredValueActivity extends ActionBarActivity {
         }
     }
 
-    public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-
-
-
-    }
 
 
     public void saveNewValues(View view){

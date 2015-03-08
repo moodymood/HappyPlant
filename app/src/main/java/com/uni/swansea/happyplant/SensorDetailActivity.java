@@ -37,6 +37,7 @@ public class SensorDetailActivity extends ActionBarActivity {
         }
     }
 
+
     public void onBackPressed() {
         Intent returnIntent = new Intent();
         returnIntent.putExtra("SENSOR", CURR_SENSOR);
@@ -107,29 +108,27 @@ public class SensorDetailActivity extends ActionBarActivity {
 
     public void refreshGraph(){
 
-        int currHour = plantStatus.getCurrentHour();
+        int todayHours = plantStatus.getCurrentHour();
+        int yesterdayHours = 24 - todayHours;
         int[] sensorValues = plantStatus.sensorsMap.get(CURR_SENSOR);
+
 
         GraphView graph1 = (GraphView) findViewById(R.id.graph1);
         GraphView graph2 = (GraphView) findViewById(R.id.graph2);
 
-        DataPoint[] dp1 = new DataPoint[24];
-        DataPoint[] dp2 = new DataPoint[24];
+        DataPoint[] dp1 = new DataPoint[yesterdayHours];
+        DataPoint[] dp2 = new DataPoint[todayHours];
 
 
-        for(int i = 0; i<currHour; i++){
-            dp1[i] = new DataPoint(i,0);
-        }
-        for(int i = currHour; i<24; i++){
-            dp1[i] = new DataPoint(i,sensorValues[i]);
+
+        for(int i = 0; i<yesterdayHours; i++){
+            dp1[i] = new DataPoint(i+todayHours,sensorValues[i+todayHours]);
         }
 
-        for(int i = 0; i<currHour; i++){
+        for(int i = 0; i<todayHours; i++){
             dp2[i] = new DataPoint(i,sensorValues[i]);
         }
-        for(int i = currHour; i<24; i++){
-            dp2[i] = new DataPoint(i,0);
-        }
+
 
         LineGraphSeries<DataPoint> series1 = new LineGraphSeries<>(dp1);
         LineGraphSeries<DataPoint> series2 = new LineGraphSeries<>(dp2);
