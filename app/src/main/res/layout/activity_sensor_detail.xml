@@ -51,27 +51,34 @@
 
 
             // Current value and required value
-            <LinearLayout
+            <RelativeLayout
                     android:orientation="horizontal"
-                    android:layout_width="match_parent"
+                    android:layout_width="fill_parent"
                     android:layout_height="50dp"
                     android:weightSum="1"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="15dp">
+                android:layout_marginTop="15dp"
+                android:layout_gravity="center_vertical">
 
 
                 <TextView android:id="@+id/sensorCurrValuesText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="@string/sensorCurrValuesText" />
+                        android:text="@string/sensorCurrValuesText"
+                    android:layout_marginLeft="36dp"
+                    android:layout_marginStart="36dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
 
                 <TextView android:id="@+id/sensorReqValuesText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="@string/sensorReqValuesText"
-                    android:layout_marginLeft="140dp" />
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/imageView2"
+                    android:layout_toStartOf="@+id/imageView2" />
 
                 <ImageView
                     android:layout_width="25dp"
@@ -79,10 +86,14 @@
                     android:src="@drawable/edit"
                     android:onClick="editRequiredValue"
                     android:contentDescription="@string/edit"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginLeft="5dp" />
+                    android:id="@+id/imageView2"
+                    android:layout_alignBottom="@+id/sensorCurrValuesText"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="36dp"
+                    android:layout_marginEnd="36dp" />
 
-            </LinearLayout>
+            </RelativeLayout>
 
 
             // Graph

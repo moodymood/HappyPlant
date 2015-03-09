@@ -59,7 +59,7 @@
                 android:scaleY="0.8"/>
 
             <TextView android:id="@+id/unitMinText"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
