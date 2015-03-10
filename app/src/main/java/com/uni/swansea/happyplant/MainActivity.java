@@ -1,6 +1,13 @@
 package com.uni.swansea.happyplant;
 
 
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
 import com.phidgets.InterfaceKitPhidget;
 import com.phidgets.Phidget;
 import com.phidgets.PhidgetException;
@@ -10,13 +17,6 @@ import com.phidgets.event.DetachEvent;
 import com.phidgets.event.DetachListener;
 import com.phidgets.event.SensorChangeEvent;
 import com.phidgets.event.SensorChangeListener;
-
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
@@ -248,5 +248,29 @@ public class MainActivity extends Activity {
         intent.putExtra("SENSOR", PlantStatus.HUM);
         intent.putExtra("VALUE", plantStatus);
         startActivityForResult(intent,1);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        System.out.println("Pausing");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        System.out.println("Stopping");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        System.out.println("Resuming");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        System.out.println("Starting");
     }
 }
