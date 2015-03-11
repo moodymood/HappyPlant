@@ -2,11 +2,19 @@ package com.uni.swansea.happyplant;
 
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.phidgets.InterfaceKitPhidget;
 import com.phidgets.Phidget;
@@ -20,10 +28,13 @@ import com.phidgets.event.SensorChangeListener;
 
 public class MainActivity extends Activity {
 
-
+    MessageReceiver messageReceiver;
     public InterfaceKitPhidget ik;
     public PlantStatus plantStatus;
     public TextView[] sensorsTextViews;
+
+    boolean mBounded;
+    PlantDataService mServer;
 
     /** Called when the activity is first created. */
     @Override
@@ -34,8 +45,19 @@ public class MainActivity extends Activity {
 
         plantStatus = new PlantStatus();
 
+        Button startStopButton = (Button)findViewById(R.id.serviceStartStopButton);
+        startStopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!isMyServiceRunning(PlantDataService.class)) {
+                    startService(new Intent(getApplicationContext(), PlantDataService.class));
+                } else {
+                    stopService(new Intent(getApplicationContext(), PlantDataService.class));
+                }
+            }
+        });
 
-
+        messageReceiver = new MessageReceiver();
 
         sensorsTextViews = new TextView[8];
         sensorsTextViews[0] = (TextView)findViewById(R.id.tempLabelText);
@@ -223,42 +245,40 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void createDetailsIntent(int sensor, PlantStatus value){
+        Intent intent = new Intent(MainActivity.this, SensorDetailActivity.class);
+        intent.putExtra("SENSOR", sensor);
+        intent.putExtra("VALUE", value);
+        startActivityForResult(intent,1);
+    }
 
     // Intent methods, called when the user touch a specific sensor
     public void tempDetail(View view)
     {
-
-        Intent intent = new Intent(MainActivity.this, SensorDetailActivity.class);
-        intent.putExtra("SENSOR", PlantStatus.TEMP);
-        intent.putExtra("VALUE", plantStatus);
-        startActivityForResult(intent,1);
+        createDetailsIntent(PlantStatus.TEMP, plantStatus);
     }
 
     public void lightDetail(View view)
     {
-        Intent intent = new Intent(MainActivity.this, SensorDetailActivity.class);
-        intent.putExtra("SENSOR", PlantStatus.LIGHT);
-        intent.putExtra("VALUE", plantStatus);
-        startActivityForResult(intent,1);
+        createDetailsIntent(PlantStatus.LIGHT, plantStatus);
     }
 
     public void humDetail(View view)
     {
-        Intent intent = new Intent(MainActivity.this, SensorDetailActivity.class);
-        intent.putExtra("SENSOR", PlantStatus.HUM);
-        intent.putExtra("VALUE", plantStatus);
-        startActivityForResult(intent,1);
+        createDetailsIntent(PlantStatus.HUM, plantStatus);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         System.out.println("Pausing");
+        unregisterReceiver(messageReceiver);
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        //stopService(new Intent(this, PlantDataService.class));
         System.out.println("Stopping");
     }
 
@@ -266,11 +286,46 @@ public class MainActivity extends Activity {
     public void onResume() {
         super.onResume();
         System.out.println("Resuming");
+        registerReceiver(messageReceiver, new IntentFilter("NEWMESSAGE"));
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        if(!isMyServiceRunning(PlantDataService.class)) {
+            Intent mIntent = new Intent(this, PlantDataService.class);
+            startService(new Intent(this, PlantDataService.class));
+            //bindService(mIntent, mConnection, BIND_AUTO_CREATE);
+        }
+        registerReceiver(messageReceiver, new IntentFilter("NEWMESSAGE"));
+
         System.out.println("Starting");
     }
+
+    ServiceConnection mConnection = new ServiceConnection() {
+
+        public void onServiceDisconnected(ComponentName name) {
+            Toast.makeText(getApplicationContext(), "Service is disconnected", Toast.LENGTH_LONG).show();
+            //mBounded = false;
+            mServer = null;
+        }
+
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Toast.makeText(getApplicationContext(), "Service is connected", Toast.LENGTH_LONG).show();
+            mBounded = true;
+            PlantDataService.LocalBinder mLocalBinder = (PlantDataService.LocalBinder)service;
+            mServer = mLocalBinder.getServerInstance();
+        }
+    };
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

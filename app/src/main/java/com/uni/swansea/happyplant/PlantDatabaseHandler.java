@@ -19,6 +19,17 @@ import java.util.Locale;
  * Created by michaelwaterworth on 09/03/15.
  */
 public class PlantDatabaseHandler extends SQLiteOpenHelper {
+    private static PlantDatabaseHandler instance;
+    private Context mCtx;
+
+    public static synchronized PlantDatabaseHandler getHelper(Context context)
+    {
+        if (instance == null)
+            instance = new PlantDatabaseHandler(context);
+
+        return instance;
+    }
+
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     DateFormat format = new SimpleDateFormat(DATE_FORMAT, Locale.ENGLISH);
 
@@ -34,6 +45,15 @@ public class PlantDatabaseHandler extends SQLiteOpenHelper {
     public PlantDatabaseHandler(Context context, String name,
                        SQLiteDatabase.CursorFactory factory, int version) {
         super(context, DATABASE_NAME, factory, DATABASE_VERSION);
+    }
+
+    /**
+     * constructor should be private to prevent direct instantiation.
+     * make call to static factory method "getInstance()" instead.
+     */
+    private PlantDatabaseHandler(Context ctx) {
+        super(ctx, DATABASE_NAME, null, DATABASE_VERSION);
+        this.mCtx = ctx;
     }
 
     @Override
@@ -128,3 +148,6 @@ public class PlantDatabaseHandler extends SQLiteOpenHelper {
         return statusDataList;
     }
 }
+
+
+// did u sleep last night? remind me to tell u two things: where to filter the new value and we need also to save the required values defined by the user
