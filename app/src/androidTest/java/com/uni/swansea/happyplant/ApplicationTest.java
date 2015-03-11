@@ -26,7 +26,8 @@ public class ApplicationTest
         mFirstTestActivity = getActivity();
 
         //Get Db handler
-        dHandler = new PlantDatabaseHandler(mFirstTestActivity.getApplicationContext(), null, null, 1);
+        dHandler = PlantDatabaseHandler.getHelper(mFirstTestActivity.getApplicationContext());
+        //dHandler = new PlantDatabaseHandler(mFirstTestActivity.getApplicationContext(), null, null, 1);
 
         //Wipe the current data
         dHandler.clearData();
