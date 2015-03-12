@@ -75,8 +75,7 @@ public class PlantDataService extends Service{
 
     private void sendMessage(){
         Intent i = new Intent("NEWMESSAGE");
-        i.putExtra("username", "sample");
-        i.putExtra("password", "example");
+        i.putExtra("test", "sample");
         sendBroadcast(i);
     }
 

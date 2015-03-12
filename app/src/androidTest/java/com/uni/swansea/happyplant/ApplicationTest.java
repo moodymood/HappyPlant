@@ -54,17 +54,6 @@ public class ApplicationTest
         dHandler.addStatusData(new PlantStatusData(2, 200, oldDate));
     }
 
-//    public void testPreconditions() {
-//        assertNotNull("mFirstTestActivity is null", mFirstTestActivity);
-//        assertNotNull("mFirstTestText is null", mFirstTestText);
-//    }
-//
-//    public void testDatabaseGetSingle() {
-//        final String expected = "One";
-//        final String actual = "One";
-//        assertEquals(expected, actual);
-//    }
-
 
     @Override
     protected void tearDown() throws Exception {
