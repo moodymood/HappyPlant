@@ -148,6 +148,3 @@ public class PlantDatabaseHandler extends SQLiteOpenHelper {
         return statusDataList;
     }
 }
-
-
-// did u sleep last night? remind me to tell u two things: where to filter the new value and we need also to save the required values defined by the user
