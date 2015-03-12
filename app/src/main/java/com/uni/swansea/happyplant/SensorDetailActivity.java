@@ -20,6 +20,7 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 
 public class SensorDetailActivity extends ActionBarActivity {
 
+    MessageReceiver messageReceiver;
     public PlantStatus plantStatus;
     public int CURR_SENSOR;
 
@@ -27,6 +28,8 @@ public class SensorDetailActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensor_detail);
+
+        messageReceiver = new MessageReceiver();
 
         // Check if the intent has extra data
         // and update the plantStatus variable

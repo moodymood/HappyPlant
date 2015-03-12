@@ -5,9 +5,11 @@
     <string name="action_settings">action_settings</string>
 
     //  Main    <string name="phidgetStatusText">Phidget connection:</string>
+    <string name="serviceStatusText">Service status:</string>
     <string name="plantStatusMessageOK">Hi,\nI am feeling very good!</string>
     <string name="plantStatusMessageKO">Oh oh,\nI am not feeling very good!</string>
     <string name="sensorUnknown">Unknow value</string>
+
 
     // Common    <string name="tempLabelText">Temperature</string>
     <string name="lightLabelText">Light</string>

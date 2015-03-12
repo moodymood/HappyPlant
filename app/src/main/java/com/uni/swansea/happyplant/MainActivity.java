@@ -11,7 +11,6 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,14 +44,16 @@ public class MainActivity extends Activity {
 
         plantStatus = new PlantStatus();
 
-        Button startStopButton = (Button)findViewById(R.id.serviceStartStopButton);
-        startStopButton.setOnClickListener(new View.OnClickListener() {
+        final ImageView serviceStatusImageView = (ImageView)findViewById(R.id.serviceStatusImageView);
+        serviceStatusImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(!isMyServiceRunning(PlantDataService.class)) {
                     startService(new Intent(getApplicationContext(), PlantDataService.class));
+                    serviceStatusImageView.setImageResource(R.drawable.pause);
                 } else {
                     stopService(new Intent(getApplicationContext(), PlantDataService.class));
+                    serviceStatusImageView.setImageResource(R.drawable.start);
                 }
             }
         });
@@ -268,39 +269,8 @@ public class MainActivity extends Activity {
         createDetailsIntent(PlantStatus.HUM, plantStatus);
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        System.out.println("Pausing");
-        unregisterReceiver(messageReceiver);
-    }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        //stopService(new Intent(this, PlantDataService.class));
-        System.out.println("Stopping");
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        System.out.println("Resuming");
-        registerReceiver(messageReceiver, new IntentFilter("NEWMESSAGE"));
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        if(!isMyServiceRunning(PlantDataService.class)) {
-            Intent mIntent = new Intent(this, PlantDataService.class);
-            startService(new Intent(this, PlantDataService.class));
-            //bindService(mIntent, mConnection, BIND_AUTO_CREATE);
-        }
-        registerReceiver(messageReceiver, new IntentFilter("NEWMESSAGE"));
-
-        System.out.println("Starting");
-    }
 
     ServiceConnection mConnection = new ServiceConnection() {
 
