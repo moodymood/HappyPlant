@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -17,9 +18,12 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import java.util.List;
+
 
 public class SensorDetailActivity extends ActionBarActivity {
 
+    PlantDatabaseHandler dHandler;
     MessageReceiver messageReceiver;
     public PlantStatus plantStatus;
     public int CURR_SENSOR;
@@ -30,6 +34,7 @@ public class SensorDetailActivity extends ActionBarActivity {
         setContentView(R.layout.activity_sensor_detail);
 
         messageReceiver = new MessageReceiver();
+        dHandler = PlantDatabaseHandler.getHelper(getApplicationContext());
 
         // Check if the intent has extra data
         // and update the plantStatus variable
@@ -92,6 +97,7 @@ public class SensorDetailActivity extends ActionBarActivity {
 
     // Refresh value if they has been changed
     public void refreshSensorValues(){
+        PlantDataRange plantDataRange = dHandler.getRange(CURR_SENSOR);
 
         TextView sensorCurrValuesText = (TextView) findViewById(R.id.sensorCurrValuesText);
         String temp = getResources().getString(R.string.sensorCurrValuesText);
@@ -101,13 +107,14 @@ public class SensorDetailActivity extends ActionBarActivity {
 
         TextView sensorReqValuesText = (TextView) findViewById(R.id.sensorReqValuesText);
         temp = getResources().getString(R.string.sensorReqValuesText);
-        temp = temp.replace("MIN", String.valueOf(plantStatus.minReqValues[CURR_SENSOR]));
-        temp = temp.replace("MAX", String.valueOf(plantStatus.maxReqValues[CURR_SENSOR]));
+        temp = temp.replace("MIN", String.valueOf(plantDataRange.getMinValue()));
+        temp = temp.replace("MAX", String.valueOf(plantDataRange.getMaxValue()));
         temp = temp.replace("-UNIT-", plantStatus.unit[CURR_SENSOR]);
         sensorReqValuesText.setText(temp);
 
 
     }
+/*
 
     public void refreshGraph(){
 
@@ -156,7 +163,59 @@ public class SensorDetailActivity extends ActionBarActivity {
         graph1.addSeries(series1);
         graph2.addSeries(series2);
     }
-    
+
+*/
+
+
+    public void refreshGraph(){
+
+        int todayHours = plantStatus.getCurrentHour();
+
+
+        List<PlantStatusData> plantStatusData = dHandler.findByType(CURR_SENSOR);
+
+        GraphView graph1 = (GraphView) findViewById(R.id.graph1);
+        GraphView graph2 = (GraphView) findViewById(R.id.graph2);
+
+        DataPoint[] dp1 = new DataPoint[plantStatusData.size()];
+        DataPoint[] dp2 = new DataPoint[plantStatusData.size()];
+
+
+
+        for(int i = 0; i<plantStatusData.size(); i++){
+            dp1[i] = new DataPoint(i, plantStatusData.get(i).getValue());
+        }
+
+        for(int i = 0; i<plantStatusData.size(); i++){
+            dp2[i] = new DataPoint(i, plantStatusData.get(i).getValue());
+        }
+
+
+        LineGraphSeries<DataPoint> series1 = new LineGraphSeries<>(dp1);
+        LineGraphSeries<DataPoint> series2 = new LineGraphSeries<>(dp2);
+
+     //   graph1.getGridLabelRenderer().setNumHorizontalLabels(24);
+        graph1.getGridLabelRenderer().setTextSize(25);
+      //  graph1.getViewport().setXAxisBoundsManual(true);
+       // graph1.getViewport().setMinX(0);
+       // graph1.getViewport().setMaxX(23);
+
+       // graph2.getGridLabelRenderer().setNumHorizontalLabels(24);
+        graph2.getGridLabelRenderer().setTextSize(25);
+  //      graph2.getViewport().setXAxisBoundsManual(true);
+     //   graph2.getViewport().setMinX(0);
+     //   graph2.getViewport().setMaxX(23);
+
+
+
+        graph1.setTitle("Yesterday");
+        graph2.setTitle("Today");
+
+        graph1.addSeries(series1);
+        graph2.addSeries(series2);
+    }
+
+
     // Intent for changing required values
     public void editRequiredValue(View view)
     {
@@ -165,5 +224,6 @@ public class SensorDetailActivity extends ActionBarActivity {
         intent.putExtra("VALUE", plantStatus);
         startActivityForResult(intent,1);
     }
+
 
 }

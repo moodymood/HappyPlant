@@ -27,13 +27,18 @@ import com.phidgets.event.SensorChangeListener;
 
 public class MainActivity extends Activity {
 
-    MessageReceiver messageReceiver;
-    public InterfaceKitPhidget ik;
-    public PlantStatus plantStatus;
-    public TextView[] sensorsTextViews;
 
     boolean mBounded;
     PlantDataService mServer;
+    MessageReceiver messageReceiver;
+
+    //public InterfaceKitPhidget ik;
+    // TODO remove plantStatus when everything is over
+    public PlantStatus plantStatus;
+    // TOdo change TextView array
+    public TextView[] sensorsTextViews;
+
+
 
     /** Called when the activity is first created. */
     @Override
@@ -42,7 +47,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);
 
 
-        plantStatus = new PlantStatus();
+        plantStatus = new PlantStatus(new PlantStatusData(0,1,));
 
         final ImageView serviceStatusImageView = (ImageView)findViewById(R.id.serviceStatusImageView);
         serviceStatusImageView.setOnClickListener(new View.OnClickListener() {
@@ -67,7 +72,7 @@ public class MainActivity extends Activity {
 
         initAllView();
 
-
+/*
         try
         {
             //Phidget.enableLogging(Phidget.PHIDGET_LOG_VERBOSE, "/Removable/USBdisk2/logfile.log");
@@ -115,19 +120,20 @@ public class MainActivity extends Activity {
         {
             pe.printStackTrace();
         }
+        */
     }
 
 
-
+/*
     @Override
     protected void onDestroy() {
         super.onDestroy();
         try {
-            ik.close();
+           ik.close();
         } catch (PhidgetException e) {
             e.printStackTrace();
         }
-        com.phidgets.usb.Manager.Uninitialize();
+ //       com.phidgets.usb.Manager.Uninitialize();
     }
 
 
@@ -167,19 +173,7 @@ public class MainActivity extends Activity {
         public void run() {
 
             if(sensorsTextViews[sensorIndex]!=null) {
-                /*
-                if (sensorIndex == 0) {
-                    sensorsTextViews[sensorIndex].setText("Temperature:" + plantStatus.getCurrValue(sensorIndex));
-                    plantStatus.addValue(0, sensorVal);
-                } else if (sensorIndex == 1) {
-                    sensorsTextViews[sensorIndex].setText("Light:" + plantStatus.getCurrValue(sensorIndex));
-                    plantStatus.addValue(1, sensorVal);
-                }
-                if (sensorIndex == 2) {
-                    sensorsTextViews[sensorIndex].setText("Humidity:" + plantStatus.getCurrValue(sensorIndex));
-                    plantStatus.addValue(2, sensorVal);
-                }
-                */
+
                 plantStatus.addValue(sensorIndex,sensorVal);
                 updateSensorView(sensorIndex);
                 updatePlantStatusView();
@@ -187,7 +181,7 @@ public class MainActivity extends Activity {
         }
     }
 
-
+*/
 
     // Update the status message for the plant
     public void updatePlantStatusView() {
@@ -219,6 +213,8 @@ public class MainActivity extends Activity {
         else
             sensorStatus.setImageResource(R.drawable.red_led);
     }
+
+
 
     // Initialize all sensors status when the activity is created
     public void initAllView(){
@@ -270,7 +266,7 @@ public class MainActivity extends Activity {
     }
 
 
-
+/*
 
     ServiceConnection mConnection = new ServiceConnection() {
 
@@ -287,7 +283,7 @@ public class MainActivity extends Activity {
             mServer = mLocalBinder.getServerInstance();
         }
     };
-
+*/
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -297,5 +293,6 @@ public class MainActivity extends Activity {
         }
         return false;
     }
+
 
 }

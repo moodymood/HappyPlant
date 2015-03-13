@@ -68,12 +68,19 @@ public class PlantDataService extends Service{
                 }
             }
             //do work
+            // step2 put something significative in the message
             sendMessage();
             mHandler.postDelayed(this, 1000);
         }
     };
 
     private void sendMessage(){
+        Intent i = new Intent("NEWMESSAGE");
+        i.putExtra("test", "sample");
+        sendBroadcast(i);
+    }
+
+    private void sendMessage(PlantStatusData plantStatusData){
         Intent i = new Intent("NEWMESSAGE");
         i.putExtra("test", "sample");
         sendBroadcast(i);
@@ -109,37 +116,6 @@ public class PlantDataService extends Service{
             }
         }
 
-        class SensorChangeRunnable implements Runnable {
-            int sensorIndex, sensorVal;
-
-            public SensorChangeRunnable(int index, int val)
-            {
-                this.sensorIndex = index;
-                this.sensorVal = val;
-
-            }
-            public void run() {
-
-                //if(sensorsTextViews[sensorIndex]!=null) {
-                /*
-                if (sensorIndex == 0) {
-                    sensorsTextViews[sensorIndex].setText("Temperature:" + plantStatus.getCurrValue(sensorIndex));
-                    plantStatus.addValue(0, sensorVal);
-                } else if (sensorIndex == 1) {
-                    sensorsTextViews[sensorIndex].setText("Light:" + plantStatus.getCurrValue(sensorIndex));
-                    plantStatus.addValue(1, sensorVal);
-                }
-                if (sensorIndex == 2) {
-                    sensorsTextViews[sensorIndex].setText("Humidity:" + plantStatus.getCurrValue(sensorIndex));
-                    plantStatus.addValue(2, sensorVal);
-                }
-                */
-//                    plantStatus.addValue(sensorIndex,sensorVal);
-//                    updateSensorView(sensorIndex);
-//                    updatePlantStatusView();
-//                }
-            }
-        }
 
         try
         {
@@ -213,13 +189,21 @@ public class PlantDataService extends Service{
 
     @Override
     public void onCreate() {
+
         this.isAttached = false;
         dHandler = PlantDatabaseHandler.getHelper(getApplicationContext());
+        dHandler.clearData();
+        dHandler.addRangeValues(new PlantDataRange(0,0,1,10));
+        dHandler.addRangeValues(new PlantDataRange(1,1,10,20));
+        dHandler.addRangeValues(new PlantDataRange(2,2,20,30));
         mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 //        Toast.makeText(this, "Congrats! MyService Created", Toast.LENGTH_LONG).show();
         Log.d("PlantDataService", "onCreate");
         mHandler = new Handler();
         showNotification();
+
+        // 1 step = register phidget work?
+        //registerPhidget();
     }
 
     @Override

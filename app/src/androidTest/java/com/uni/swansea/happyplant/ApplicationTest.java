@@ -52,6 +52,8 @@ public class ApplicationTest
         dHandler.addStatusData(new PlantStatusData(2, 200, oldDate));
         dHandler.addStatusData(new PlantStatusData(2, 200, oldDate));
         dHandler.addStatusData(new PlantStatusData(2, 200, oldDate));
+
+        dHandler.addRangeValues(new PlantDataRange(1,1,1,19));
     }
 
 

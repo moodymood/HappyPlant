@@ -33,14 +33,21 @@ public class PlantDatabaseHandler extends SQLiteOpenHelper {
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     DateFormat format = new SimpleDateFormat(DATE_FORMAT, Locale.ENGLISH);
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "plants.db";
-    private static final String TABLE_SENSORVALUES = "sensorvalues";
 
+
+    // PlantStatusData table
+    private static final String TABLE_SENSORVALUES = "sensorvalues";
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_SENSORTYPE = "sensortype";
     public static final String COLUMN_SENSORVALUE = "sensorvalue";
     public static final String COLUMN_TIMESTAMP = "timestamp";
+
+    // PlantDataRange table
+    private static final String TABLE_SENSORRANGES = "sensorrange";
+    public static final String COLUMN_MINVALUE = "minvalue";
+    public static final String COLUMN_MAXVALUE = "maxvalue";
 
     public PlantDatabaseHandler(Context context, String name,
                        SQLiteDatabase.CursorFactory factory, int version) {
@@ -64,18 +71,31 @@ public class PlantDatabaseHandler extends SQLiteOpenHelper {
                 + COLUMN_SENSORTYPE + " INTEGER,"
                 + COLUMN_SENSORVALUE + " INTEGER,"
                 + COLUMN_TIMESTAMP + " TEXT)";
+
+        String createRangeTable = "CREATE TABLE " +
+                TABLE_SENSORRANGES + "("
+                + COLUMN_ID + " INTEGER PRIMARY KEY,"
+                + COLUMN_SENSORTYPE + " INTEGER,"
+                + COLUMN_MINVALUE + " INTEGER,"
+                + COLUMN_MAXVALUE + " INTEGER)";
+
         db.execSQL(createValuesTable);
+        db.execSQL(createRangeTable);
+
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SENSORVALUES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SENSORRANGES);
         onCreate(db);
     }
 
     public void clearData() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DELETE FROM " + TABLE_SENSORVALUES);
+        db.execSQL("DELETE FROM " + TABLE_SENSORRANGES);
     }
 
 
@@ -147,4 +167,39 @@ public class PlantDatabaseHandler extends SQLiteOpenHelper {
         db.close();
         return statusDataList;
     }
+
+    public void addRangeValues(PlantDataRange plantDataRange){
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_SENSORTYPE, plantDataRange.getType());
+        values.put(COLUMN_MINVALUE, plantDataRange.getMinValue());
+        values.put(COLUMN_MAXVALUE, plantDataRange.getMaxValue());
+
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+         db.insert(TABLE_SENSORRANGES, null, values);
+        db.close();
+    }
+
+    public PlantDataRange getRange(int statusType) {
+        PlantDataRange plantDataRange = new PlantDataRange();
+        String query = "select " + COLUMN_MINVALUE + ", " + COLUMN_MAXVALUE + " from " + TABLE_SENSORRANGES + " where " + COLUMN_SENSORTYPE + " = " + statusType;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery(query, null);
+
+
+        while (cursor.moveToNext()) {
+            plantDataRange.setType(statusType);
+            plantDataRange.setMinValue(Math.round(cursor.getFloat(0)));
+            plantDataRange.setMaxValue(Math.round(cursor.getFloat(1)));
+
+        }
+        cursor.close();
+        db.close();
+        return plantDataRange;
+    }
+
+
 }

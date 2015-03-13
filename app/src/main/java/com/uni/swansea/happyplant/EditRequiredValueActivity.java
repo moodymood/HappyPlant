@@ -13,11 +13,15 @@ import android.widget.TextView;
 public class EditRequiredValueActivity extends ActionBarActivity {
 
     public PlantStatus plantStatus;
+    PlantDatabaseHandler dHandler;
     public int CURR_SENSOR;
     NumberPicker minNumberPicker, maxNumberPicker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        dHandler = PlantDatabaseHandler.getHelper(getApplicationContext());
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_required_value);
 
@@ -33,11 +37,10 @@ public class EditRequiredValueActivity extends ActionBarActivity {
 
     public void saveNewValues(View view){
         NumberPicker minNumberPicker = (NumberPicker) findViewById(R.id.minReqValue);
-        plantStatus.minReqValues[CURR_SENSOR] = minNumberPicker.getValue();
-
         NumberPicker maxNumberPicker = (NumberPicker) findViewById(R.id.maxReqValue);
-        plantStatus.maxReqValues[CURR_SENSOR] = maxNumberPicker.getValue();
 
+        PlantDataRange newPlantDataRange = new PlantDataRange(1,CURR_SENSOR, minNumberPicker.getValue(), maxNumberPicker.getValue());
+        dHandler.addRangeValues(newPlantDataRange);
 
         Intent returnIntent = new Intent();
         returnIntent.putExtra("SENSOR", CURR_SENSOR);
@@ -73,10 +76,11 @@ public class EditRequiredValueActivity extends ActionBarActivity {
     }
 
     public void refreshEditValues() {
+        PlantDataRange plantDataRanged = dHandler.getRange(CURR_SENSOR);
         minNumberPicker = (NumberPicker) findViewById(R.id.minReqValue);
-        minNumberPicker.setMaxValue(plantStatus.maxReqValues[CURR_SENSOR]);
+        minNumberPicker.setMaxValue(plantDataRanged.getMaxValue());
         minNumberPicker.setMinValue(0);
-        minNumberPicker.setValue(plantStatus.minReqValues[CURR_SENSOR]);
+        minNumberPicker.setValue(plantDataRanged.getMinValue());
         minNumberPicker.setOnValueChangedListener( new NumberPicker.
                 OnValueChangeListener() {
             @Override
@@ -87,8 +91,8 @@ public class EditRequiredValueActivity extends ActionBarActivity {
 
         maxNumberPicker = (NumberPicker) findViewById(R.id.maxReqValue);
         maxNumberPicker.setMaxValue(100);
-        maxNumberPicker.setMinValue(plantStatus.minReqValues[CURR_SENSOR]);
-        maxNumberPicker.setValue(plantStatus.maxReqValues[CURR_SENSOR]);
+        maxNumberPicker.setMinValue(plantDataRanged.getMinValue());
+        maxNumberPicker.setValue(plantDataRanged.getMaxValue());
         maxNumberPicker.setOnValueChangedListener( new NumberPicker.
                 OnValueChangeListener() {
             @Override

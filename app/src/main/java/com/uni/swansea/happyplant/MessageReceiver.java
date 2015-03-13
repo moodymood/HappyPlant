@@ -21,5 +21,7 @@ public class MessageReceiver extends BroadcastReceiver
             String username = extra.getString("username");
             Log.d("DataReceived", username);
         }
+
+
     }
 }
