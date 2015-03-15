@@ -37,8 +37,18 @@
         <activity
             android:screenOrientation="landscape"
             android:name=".EditRequiredValueActivity"
-            android:theme="@style/NoActionBar" >>
+            android:theme="@style/NoActionBar" >
         </activity>
+
+        <receiver android:name=".MessageReceiver"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="com.uni.swansea.happyplant.MessageReceiver">
+                </action>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

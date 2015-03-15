@@ -33,11 +33,12 @@ public class PlantDataService extends Service{
 
     private int NOTIFICATION = 11;
     private Handler mHandler;
+
     public InterfaceKitPhidget ik;
     private boolean isAttached;
 
 
-    IBinder mBinder = new LocalBinder();
+    private IBinder mBinder = new LocalBinder();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -53,37 +54,44 @@ public class PlantDataService extends Service{
     private Runnable myTask = new Runnable() {
         @Override
         public void run() {
-            dHandler.addStatusData(new PlantStatusData(1, (int) Math.round(Math.random() * 100), new Date()));
+
+            // Fake data
+            PlantStatusData[] newPlantStatusData = new PlantStatusData[3];
+            newPlantStatusData[0] = new PlantStatusData(0, (int) Math.round(Math.random() * 100), new Date());
+            newPlantStatusData[1] = new PlantStatusData(1, (int) Math.round(Math.random() * 100), new Date());
+            newPlantStatusData[2] = new PlantStatusData(2, (int) Math.round(Math.random() * 100), new Date());
 
             Log.d("PlantDataService", "Logging data in service");
             if(isAttached){//Phidget attached
-                int i = 0;
-                while(i < 3) {
+                for( int i=0; i<3; i++) {
                     try {
-                        ik.getSensorValue(i);
-                        i++;
+                        int value = ik.getSensorValue(i);
+                        newPlantStatusData[i] = new PlantStatusData(i, value, new Date());
+
                     } catch(PhidgetException pException){
                         Log.d("PlantDataService", pException.toString());
                     }
                 }
             }
-            //do work
-            // step2 put something significative in the message
-            sendMessage();
+
+
+            for(int i=0; i<3; i++)
+                dHandler.addStatusData(newPlantStatusData[i]);
+
+
+            sendMessage(newPlantStatusData);
             mHandler.postDelayed(this, 1000);
         }
     };
 
-    private void sendMessage(){
-        Intent i = new Intent("NEWMESSAGE");
-        i.putExtra("test", "sample");
-        sendBroadcast(i);
-    }
+    private void sendMessage(PlantStatusData[] newPlantStatusData){
+        PlantCurrentStatus plantCurrentStatus = new PlantCurrentStatus(newPlantStatusData, null);
 
-    private void sendMessage(PlantStatusData plantStatusData){
-        Intent i = new Intent("NEWMESSAGE");
-        i.putExtra("test", "sample");
-        sendBroadcast(i);
+        Intent intent = new Intent();
+        intent.setAction("com.uni.swansea.happyplant.MessageReceiver");
+        intent.putExtra("CURRSTATUS", plantCurrentStatus);
+        intent.putExtra("PHIDGCONN", isAttached);
+        sendBroadcast(intent);
     }
 
 
@@ -98,17 +106,14 @@ public class PlantDataService extends Service{
                 this.attach = attach;
             }
             public void run() {
-                //ImageView phidgetStatusImg = (ImageView) findViewById(R.id.phidgetStatusImg);
                 if(attach)
                 {
                     isAttached = true;
-                    //phidgetStatusImg.setImageResource(R.drawable.connected);
                 }
                 else {
                     isAttached = false;
                 }
-                // phidgetStatusImg.setImageResource(R.drawable.disconnected);
-                //notify that we're done
+
                 synchronized(this)
                 {
                     this.notify();
@@ -155,7 +160,6 @@ public class PlantDataService extends Service{
 //                    runOnUiThread(new SensorChangeRunnable(se.getIndex(), se.getValue()));
 //                }
 //            });
-
             ik.openAny();
 
 
@@ -187,23 +191,17 @@ public class PlantDataService extends Service{
         mNM.notify(NOTIFICATION, notification);
     }
 
+
     @Override
     public void onCreate() {
 
         this.isAttached = false;
         dHandler = PlantDatabaseHandler.getHelper(getApplicationContext());
-        dHandler.clearData();
-        dHandler.addRangeValues(new PlantDataRange(0,0,1,10));
-        dHandler.addRangeValues(new PlantDataRange(1,1,10,20));
-        dHandler.addRangeValues(new PlantDataRange(2,2,20,30));
         mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-//        Toast.makeText(this, "Congrats! MyService Created", Toast.LENGTH_LONG).show();
-        Log.d("PlantDataService", "onCreate");
         mHandler = new Handler();
         showNotification();
 
-        // 1 step = register phidget work?
-        //registerPhidget();
+        registerPhidget();
     }
 
     @Override
@@ -218,6 +216,13 @@ public class PlantDataService extends Service{
         mNM.cancel(NOTIFICATION);
         Toast.makeText(this, "Plant Data Service Stopped", Toast.LENGTH_SHORT).show();
         mHandler.removeCallbacks(myTask);
+
+        try {
+            ik.close();
+        } catch (PhidgetException e) {
+            e.printStackTrace();
+        }
+        com.phidgets.usb.Manager.Uninitialize();
         Log.d("PlantDataService", "onDestroy");
     }
 }

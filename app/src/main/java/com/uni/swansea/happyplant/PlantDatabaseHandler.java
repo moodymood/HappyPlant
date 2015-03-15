@@ -139,6 +139,22 @@ public class PlantDatabaseHandler extends SQLiteOpenHelper {
         return statusDataList;
     }
 
+    public PlantStatusData findLastByType(int statusType) {
+        PlantStatusData statusData = null;
+        String query = "select " + COLUMN_SENSORVALUE + " from " + TABLE_SENSORVALUES + " where " + COLUMN_SENSORTYPE + " = " + statusType + " order by " + COLUMN_TIMESTAMP  + " DESC limit 1";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        while (cursor.moveToNext()) {
+            statusData = new PlantStatusData();
+            statusData.setValue(Math.round(cursor.getInt(0)));
+        }
+        cursor.close();
+        db.close();
+        return statusData;
+    }
+
     public List<PlantStatusData> findByTypeGroupedHour(int statusType) {
         //"select strftime('%Y-%m-%dT%00:00:00.000', date_time),line, count() from entry group by strftime('%Y-%m-%dT%00:00:00.000', date_time)";//Day
         PlantStatusData statusData;
@@ -201,5 +217,23 @@ public class PlantDatabaseHandler extends SQLiteOpenHelper {
         return plantDataRange;
     }
 
+
+    public PlantCurrentStatus getUpdatedPlantCurrentStatus() {
+        PlantStatusData[] generalPlantStatusData =
+                {
+                        findLastByType(0),
+                        findLastByType(1),
+                        findLastByType(2)
+                };
+
+        PlantDataRange[] generalPlantDataRange =
+                {
+                        getRange(0),
+                        getRange(1),
+                        getRange(2)
+                };
+
+        return new PlantCurrentStatus(generalPlantStatusData, generalPlantDataRange);
+    }
 
 }

@@ -1,12 +1,13 @@
 package com.uni.swansea.happyplant;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by michaelwaterworth on 09/03/15.
  */
 
-public class PlantStatusData {
+public class PlantStatusData implements Serializable {
 
     private int _id;
     private int sensorType;

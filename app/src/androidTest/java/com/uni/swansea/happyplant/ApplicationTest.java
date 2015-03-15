@@ -32,12 +32,19 @@ public class ApplicationTest
         //Wipe the current data
         dHandler.clearData();
 
+        //Create date 2 and a half hours ago.
+        oldDate = new Date(System.currentTimeMillis() - 9000 * 1000);
+        dHandler.addStatusData(new PlantStatusData(0, 200, oldDate));
+        dHandler.addStatusData(new PlantStatusData(0, 200, oldDate));
+        dHandler.addStatusData(new PlantStatusData(0, 200, oldDate));
+        dHandler.addStatusData(new PlantStatusData(0, 200, oldDate));
+
         //Add sample data
         dHandler.addStatusData(new PlantStatusData(1, 100, new Date()));
-        dHandler.addStatusData(new PlantStatusData(2, 50, new Date()));
-        dHandler.addStatusData(new PlantStatusData(2, 50, new Date()));
-        dHandler.addStatusData(new PlantStatusData(2, 50, new Date()));
-        dHandler.addStatusData(new PlantStatusData(2, 50, new Date()));
+        dHandler.addStatusData(new PlantStatusData(1, 50, new Date()));
+        dHandler.addStatusData(new PlantStatusData(1, 50, new Date()));
+        dHandler.addStatusData(new PlantStatusData(1, 50, new Date()));
+        dHandler.addStatusData(new PlantStatusData(1, 50, new Date()));
 
         //Create date an hour and a half ago.
         oldDate = new Date(System.currentTimeMillis() - 5400 * 1000);
@@ -53,7 +60,9 @@ public class ApplicationTest
         dHandler.addStatusData(new PlantStatusData(2, 200, oldDate));
         dHandler.addStatusData(new PlantStatusData(2, 200, oldDate));
 
-        dHandler.addRangeValues(new PlantDataRange(1,1,1,19));
+        dHandler.addRangeValues(new PlantDataRange(0,0,1,10));
+        dHandler.addRangeValues(new PlantDataRange(1,1,10,20));
+        dHandler.addRangeValues(new PlantDataRange(2,2,20,30));
     }
 
 

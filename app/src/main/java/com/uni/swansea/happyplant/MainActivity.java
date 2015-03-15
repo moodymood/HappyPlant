@@ -3,42 +3,28 @@ package com.uni.swansea.happyplant;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.content.ComponentName;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.phidgets.InterfaceKitPhidget;
-import com.phidgets.Phidget;
-import com.phidgets.PhidgetException;
-import com.phidgets.event.AttachEvent;
-import com.phidgets.event.AttachListener;
-import com.phidgets.event.DetachEvent;
-import com.phidgets.event.DetachListener;
-import com.phidgets.event.SensorChangeEvent;
-import com.phidgets.event.SensorChangeListener;
+
+import java.util.Date;
 
 public class MainActivity extends Activity {
 
 
-    boolean mBounded;
-    PlantDataService mServer;
-    MessageReceiver messageReceiver;
-
-    //public InterfaceKitPhidget ik;
-    // TODO remove plantStatus when everything is over
-    public PlantStatus plantStatus;
-    // TOdo change TextView array
-    public TextView[] sensorsTextViews;
-
-
+    private PlantDatabaseHandler dHandler;
+    private MessageReceiver messageReceiver;
+    private PlantCurrentStatus plantCurrentStatus;
 
     /** Called when the activity is first created. */
     @Override
@@ -46,14 +32,55 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        dHandler = PlantDatabaseHandler.getHelper(getApplicationContext());
+        dHandler.clearData();
+        dHandler.addRangeValues(new PlantDataRange(0,0,1,10));
+        dHandler.addRangeValues(new PlantDataRange(1, 1, 10, 20));
+        dHandler.addRangeValues(new PlantDataRange(2, 2, 20, 30));
+        dHandler.addStatusData(new PlantStatusData(0, 50, new Date()));
+        dHandler.addStatusData(new PlantStatusData(1, 50, new Date()));
+        dHandler.addStatusData(new PlantStatusData(2, 50, new Date()));
 
-        plantStatus = new PlantStatus(new PlantStatusData(0,1,));
+        // Update the plantCurrentStatus and refresh all views (need to be the first thing)
+        plantCurrentStatus = dHandler.getUpdatedPlantCurrentStatus();
+        updateSensorView(PlantMetaInfo.TEMP);
+        updateSensorView(PlantMetaInfo.LIGHT);
+        updateSensorView(PlantMetaInfo.HUM);
+        updatePlantStatusView();
 
-        final ImageView serviceStatusImageView = (ImageView)findViewById(R.id.serviceStatusImageView);
+        // Add a listener to the start/stop button to make the service start
+        addServiceButtonListener();
+
+    }
+
+
+    protected void onStart() {
+        super.onPause();
+        addCustomReceiver();
+
+    }
+
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        plantCurrentStatus = dHandler.getUpdatedPlantCurrentStatus();
+        updateSensorView(PlantMetaInfo.TEMP);
+        updateSensorView(PlantMetaInfo.LIGHT);
+        updateSensorView(PlantMetaInfo.HUM);
+        updatePlantStatusView();
+    }
+
+
+    private void addServiceButtonListener() {
+        final ImageView serviceStatusImageView = (ImageView) findViewById(R.id.serviceStatusImageView);
         serviceStatusImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!isMyServiceRunning(PlantDataService.class)) {
+                if (!isMyServiceRunning(PlantDataService.class)) {
                     startService(new Intent(getApplicationContext(), PlantDataService.class));
                     serviceStatusImageView.setImageResource(R.drawable.pause);
                 } else {
@@ -62,228 +89,8 @@ public class MainActivity extends Activity {
                 }
             }
         });
-
-        messageReceiver = new MessageReceiver();
-
-        sensorsTextViews = new TextView[8];
-        sensorsTextViews[0] = (TextView)findViewById(R.id.tempLabelText);
-        sensorsTextViews[1] = (TextView)findViewById(R.id.lightLabelText);
-        sensorsTextViews[2] = (TextView)findViewById(R.id.humLabelText);
-
-        initAllView();
-
-/*
-        try
-        {
-            //Phidget.enableLogging(Phidget.PHIDGET_LOG_VERBOSE, "/Removable/USBdisk2/logfile.log");
-            com.phidgets.usb.Manager.Initialize(this);
-            ik = new InterfaceKitPhidget();
-            ik.addAttachListener(new AttachListener() {
-                public void attached(final AttachEvent ae) {
-                    AttachDetachRunnable handler = new AttachDetachRunnable(ae.getSource(), true);
-                    synchronized(handler)
-                    {
-                        runOnUiThread(handler);
-                        try {
-                            handler.wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-            ik.addDetachListener(new DetachListener() {
-                public void detached(final DetachEvent ae) {
-                    AttachDetachRunnable handler = new AttachDetachRunnable(ae.getSource(), false);
-                    synchronized(handler)
-                    {
-                        runOnUiThread(handler);
-                        try {
-                            handler.wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-            ik.addSensorChangeListener(new SensorChangeListener() {
-                public void sensorChanged(SensorChangeEvent se) {
-                    runOnUiThread(new SensorChangeRunnable(se.getIndex(), se.getValue()));
-                }
-            });
-
-            ik.openAny();
-
-
-        }
-        catch (PhidgetException pe)
-        {
-            pe.printStackTrace();
-        }
-        */
     }
 
-
-/*
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        try {
-           ik.close();
-        } catch (PhidgetException e) {
-            e.printStackTrace();
-        }
- //       com.phidgets.usb.Manager.Uninitialize();
-    }
-
-
-    class AttachDetachRunnable implements Runnable {
-        Phidget phidget;
-        boolean attach;
-        public AttachDetachRunnable(Phidget phidget, boolean attach)
-        {
-            this.phidget = phidget;
-            this.attach = attach;
-        }
-        public void run() {
-            ImageView phidgetStatusImg = (ImageView) findViewById(R.id.phidgetStatusImg);
-            if(attach)
-            {
-                phidgetStatusImg.setImageResource(R.drawable.connected);
-            }
-            else
-                phidgetStatusImg.setImageResource(R.drawable.disconnected);
-            //notify that we're done
-            synchronized(this)
-            {
-                this.notify();
-            }
-        }
-    }
-
-    class SensorChangeRunnable implements Runnable {
-        int sensorIndex, sensorVal;
-
-        public SensorChangeRunnable(int index, int val)
-        {
-            this.sensorIndex = index;
-            this.sensorVal = val;
-
-        }
-        public void run() {
-
-            if(sensorsTextViews[sensorIndex]!=null) {
-
-                plantStatus.addValue(sensorIndex,sensorVal);
-                updateSensorView(sensorIndex);
-                updatePlantStatusView();
-            }
-        }
-    }
-
-*/
-
-    // Update the status message for the plant
-    public void updatePlantStatusView() {
-        TextView plantStatusText = (TextView) findViewById(R.id.plantStatusMessage);
-        if(plantStatus.plantIsOK()) {
-            plantStatusText.setText(R.string.plantStatusMessageOK);
-        }
-        else{
-            plantStatusText.setText(R.string.plantStatusMessageKO);
-        }
-    }
-
-    // Update the status image of currSensor
-    public void updateSensorView(int currSensor){
-
-        ImageView sensorStatus;
-
-        // Select the current sensor's image
-        if(currSensor == PlantStatus.TEMP)
-            sensorStatus = (ImageView) findViewById(R.id.tempStatusImg);
-        else if(currSensor == PlantStatus.LIGHT)
-            sensorStatus = (ImageView) findViewById(R.id.lightStatusImg);
-        else
-            sensorStatus = (ImageView) findViewById(R.id.humStatusImg);
-
-        // Set the current sensor's image according to the new status
-        if(plantStatus.sensorIsOK(currSensor))
-            sensorStatus.setImageResource(R.drawable.green_led);
-        else
-            sensorStatus.setImageResource(R.drawable.red_led);
-    }
-
-
-
-    // Initialize all sensors status when the activity is created
-    public void initAllView(){
-        updateSensorView(PlantStatus.TEMP);
-        updateSensorView(PlantStatus.LIGHT);
-        updateSensorView(PlantStatus.HUM);
-        updatePlantStatusView();
-    }
-
-
-    // Refresh the view if the user changed the required values for the plant
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
-            if(resultCode == RESULT_OK){
-                Bundle extras = data.getExtras();
-                if (extras != null) {
-                    plantStatus = (PlantStatus) extras.getSerializable("VALUE");
-                    updateSensorView(extras.getInt("SENSOR"));
-                    updatePlantStatusView();
-                }
-            }
-            if (resultCode == RESULT_CANCELED) {
-                //Do nothing?
-            }
-        }
-    }
-
-    private void createDetailsIntent(int sensor, PlantStatus value){
-        Intent intent = new Intent(MainActivity.this, SensorDetailActivity.class);
-        intent.putExtra("SENSOR", sensor);
-        intent.putExtra("VALUE", value);
-        startActivityForResult(intent,1);
-    }
-
-    // Intent methods, called when the user touch a specific sensor
-    public void tempDetail(View view)
-    {
-        createDetailsIntent(PlantStatus.TEMP, plantStatus);
-    }
-
-    public void lightDetail(View view)
-    {
-        createDetailsIntent(PlantStatus.LIGHT, plantStatus);
-    }
-
-    public void humDetail(View view)
-    {
-        createDetailsIntent(PlantStatus.HUM, plantStatus);
-    }
-
-
-/*
-
-    ServiceConnection mConnection = new ServiceConnection() {
-
-        public void onServiceDisconnected(ComponentName name) {
-            Toast.makeText(getApplicationContext(), "Service is disconnected", Toast.LENGTH_LONG).show();
-            //mBounded = false;
-            mServer = null;
-        }
-
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Toast.makeText(getApplicationContext(), "Service is connected", Toast.LENGTH_LONG).show();
-            mBounded = true;
-            PlantDataService.LocalBinder mLocalBinder = (PlantDataService.LocalBinder)service;
-            mServer = mLocalBinder.getServerInstance();
-        }
-    };
-*/
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -294,5 +101,97 @@ public class MainActivity extends Activity {
         return false;
     }
 
+
+    // When a message is received, the plantCurrentStatus is updated and the view refreshed
+    private void addCustomReceiver() {
+        Log.d("MainActivity", "add receiver");
+        messageReceiver = new MessageReceiver(){
+            @Override
+            protected void onMessageReceived(){
+                Log.d("MainActivity", "receiving message");
+
+                Toast.makeText(getApplicationContext(), plantCurrentStatus.toString(), Toast.LENGTH_SHORT).show();
+
+                plantCurrentStatus.setGeneralPlantStatusData(getBroadcastCurrentStatus().getGeneralPlantStatusData());
+                updateSensorView(PlantMetaInfo.TEMP);
+                updateSensorView(PlantMetaInfo.LIGHT);
+                updateSensorView(PlantMetaInfo.HUM);
+                updatePhidgetImg(isPhidgetConnected());
+                updatePlantStatusView();
+            }
+        };
+
+        IntentFilter intentFilter = new IntentFilter("com.uni.swansea.happyplant.MessageReceiver");
+        intentFilter.setPriority(10);
+        registerReceiver(messageReceiver, intentFilter);
+    }
+
+
+
+    // Update the status message for the plant
+    public void updatePlantStatusView() {
+        TextView plantStatusText = (TextView) findViewById(R.id.plantStatusMessage);
+        if(plantCurrentStatus.plantIsOK()) {
+            plantStatusText.setText(R.string.plantStatusMessageOK);
+        }
+        else{
+            plantStatusText.setText(R.string.plantStatusMessageKO);
+        }
+    }
+
+    // Update the status image of currSensor
+    public void updateSensorView(int CURR_SENSOR){
+
+        ImageView sensorStatus;
+
+        // Select the current sensor's image
+        if(CURR_SENSOR == PlantMetaInfo.TEMP)
+            sensorStatus = (ImageView) findViewById(R.id.tempStatusImg);
+        else if(CURR_SENSOR == PlantMetaInfo.LIGHT)
+            sensorStatus = (ImageView) findViewById(R.id.lightStatusImg);
+        else
+            sensorStatus = (ImageView) findViewById(R.id.humStatusImg);
+
+        // Set the current sensor's image according to the new status
+        ImageView sensorStatusImg = (ImageView) findViewById(R.id.sensorStatusImg);
+        if (plantCurrentStatus.sensorIsOK(CURR_SENSOR))
+            sensorStatus.setImageResource(R.drawable.green_led);
+        else
+            sensorStatus.setImageResource(R.drawable.red_led);
+    }
+
+
+    void updatePhidgetImg(boolean phidgetIsConnected){
+        ImageView phidgetStatusImg = (ImageView) findViewById(R.id.phidgetStatusImg);
+
+        if(phidgetIsConnected)
+            phidgetStatusImg.setImageResource(R.drawable.connected);
+        else
+            phidgetStatusImg.setImageResource(R.drawable.disconnected);
+    }
+
+
+    // Intents for the Details Activity
+    private void createDetailsIntent(int sensor){
+        Intent intent = new Intent(MainActivity.this, SensorDetailActivity.class);
+        intent.putExtra("SENSOR", sensor);
+        startActivity(intent);
+    }
+
+    // Intent methods, called when the user touch a specific sensor
+    public void tempDetail(View view)
+    {
+        createDetailsIntent(PlantMetaInfo.TEMP);
+    }
+
+    public void lightDetail(View view)
+    {
+        createDetailsIntent(PlantMetaInfo.LIGHT);
+    }
+
+    public void humDetail(View view)
+    {
+        createDetailsIntent(PlantMetaInfo.HUM);
+    }
 
 }
