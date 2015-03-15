@@ -37,15 +37,25 @@ public class MainActivity extends Activity {
         dHandler.addRangeValues(new PlantDataRange(0,0,1,10));
         dHandler.addRangeValues(new PlantDataRange(1, 1, 10, 20));
         dHandler.addRangeValues(new PlantDataRange(2, 2, 20, 30));
-        dHandler.addStatusData(new PlantStatusData(0, 50, new Date()));
-        dHandler.addStatusData(new PlantStatusData(1, 50, new Date()));
-        dHandler.addStatusData(new PlantStatusData(2, 50, new Date()));
+        //Create date an hour and a half ago.
+        Date oldDate = new Date(System.currentTimeMillis() - 5400 * 1000);
+        dHandler.addStatusData(new PlantStatusData(0, 20, oldDate));
+        dHandler.addStatusData(new PlantStatusData(1, 20, oldDate));
+        dHandler.addStatusData(new PlantStatusData(2, 20, oldDate));
+        // two and a half
+        oldDate = new Date(System.currentTimeMillis() - 9000 * 1000);
+        dHandler.addStatusData(new PlantStatusData(0, 26, oldDate));
+        dHandler.addStatusData(new PlantStatusData(1, 26, oldDate));
+        dHandler.addStatusData(new PlantStatusData(2, 26, oldDate));
+
+
+
 
         // Update the plantCurrentStatus and refresh all views (need to be the first thing)
         plantCurrentStatus = dHandler.getUpdatedPlantCurrentStatus();
-        updateSensorView(PlantMetaInfo.TEMP);
-        updateSensorView(PlantMetaInfo.LIGHT);
-        updateSensorView(PlantMetaInfo.HUM);
+        updateSensorView(PhidgeMetaInfo.TEMP);
+        updateSensorView(PhidgeMetaInfo.LIGHT);
+        updateSensorView(PhidgeMetaInfo.HUM);
         updatePlantStatusView();
 
         // Add a listener to the start/stop button to make the service start
@@ -68,9 +78,9 @@ public class MainActivity extends Activity {
     public void onResume() {
         super.onResume();
         plantCurrentStatus = dHandler.getUpdatedPlantCurrentStatus();
-        updateSensorView(PlantMetaInfo.TEMP);
-        updateSensorView(PlantMetaInfo.LIGHT);
-        updateSensorView(PlantMetaInfo.HUM);
+        updateSensorView(PhidgeMetaInfo.TEMP);
+        updateSensorView(PhidgeMetaInfo.LIGHT);
+        updateSensorView(PhidgeMetaInfo.HUM);
         updatePlantStatusView();
     }
 
@@ -113,9 +123,9 @@ public class MainActivity extends Activity {
                 Toast.makeText(getApplicationContext(), plantCurrentStatus.toString(), Toast.LENGTH_SHORT).show();
 
                 plantCurrentStatus.setGeneralPlantStatusData(getBroadcastCurrentStatus().getGeneralPlantStatusData());
-                updateSensorView(PlantMetaInfo.TEMP);
-                updateSensorView(PlantMetaInfo.LIGHT);
-                updateSensorView(PlantMetaInfo.HUM);
+                updateSensorView(PhidgeMetaInfo.TEMP);
+                updateSensorView(PhidgeMetaInfo.LIGHT);
+                updateSensorView(PhidgeMetaInfo.HUM);
                 updatePhidgetImg(isPhidgetConnected());
                 updatePlantStatusView();
             }
@@ -145,9 +155,9 @@ public class MainActivity extends Activity {
         ImageView sensorStatus;
 
         // Select the current sensor's image
-        if(CURR_SENSOR == PlantMetaInfo.TEMP)
+        if(CURR_SENSOR == PhidgeMetaInfo.TEMP)
             sensorStatus = (ImageView) findViewById(R.id.tempStatusImg);
-        else if(CURR_SENSOR == PlantMetaInfo.LIGHT)
+        else if(CURR_SENSOR == PhidgeMetaInfo.LIGHT)
             sensorStatus = (ImageView) findViewById(R.id.lightStatusImg);
         else
             sensorStatus = (ImageView) findViewById(R.id.humStatusImg);
@@ -181,17 +191,17 @@ public class MainActivity extends Activity {
     // Intent methods, called when the user touch a specific sensor
     public void tempDetail(View view)
     {
-        createDetailsIntent(PlantMetaInfo.TEMP);
+        createDetailsIntent(PhidgeMetaInfo.TEMP);
     }
 
     public void lightDetail(View view)
     {
-        createDetailsIntent(PlantMetaInfo.LIGHT);
+        createDetailsIntent(PhidgeMetaInfo.LIGHT);
     }
 
     public void humDetail(View view)
     {
-        createDetailsIntent(PlantMetaInfo.HUM);
+        createDetailsIntent(PhidgeMetaInfo.HUM);
     }
 
 }

@@ -173,7 +173,7 @@ public class PlantDatabaseHandler extends SQLiteOpenHelper {
                 statusData = new PlantStatusData();
                 statusData.setType(statusType);
                 statusData.setTimeStamp(format.parse(cursor.getString(0)));
-                statusData.setValue(Math.round(cursor.getFloat(1)));
+                statusData.setValue(Math.round(cursor.getInt(1)));
                 statusDataList.add(statusData);
             } catch (ParseException e){
                 System.out.println("Failed to parse Date from DB");

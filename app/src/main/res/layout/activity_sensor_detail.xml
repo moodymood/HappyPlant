@@ -108,14 +108,16 @@
                 <com.jjoe64.graphview.GraphView
                     android:layout_width="wrap_content"
                     android:layout_height="200dp"
-                    android:id="@+id/graph2"
+                    android:id="@+id/graph1"
                     android:layout_marginTop="15dp" />
 
                 <com.jjoe64.graphview.GraphView
                     android:layout_width="wrap_content"
                     android:layout_height="200dp"
-                    android:id="@+id/graph1"
+                    android:id="@+id/graph2"
                     android:layout_marginTop="15dp" />
+
+
 
             </LinearLayout>
 

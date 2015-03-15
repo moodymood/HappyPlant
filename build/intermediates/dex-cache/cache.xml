@@ -1,47 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<items version="2">
+<items version="2" >
 
     <item
-        jar="/Users/michaelwaterworth/Dropbox/Swansea/M79 - Interactive Devices/Happy Plant/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/classes.jar"
-        jumboMode="false" revision="21.1.2" sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
-        <dex
-            dex="/Users/michaelwaterworth/Dropbox/Swansea/M79 - Interactive Devices/Happy Plant/app/build/intermediates/pre-dexed/debug/classes-265cf8e6f70771c379ceee80c98f1d9a87896de5.jar" />
+        jar="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/pre-dexed/debug/classes-bd402f2877dc218994dbf404dacf113f6b946360.jar" />
     </item>
     <item
-        jar="/Users/michaelwaterworth/Dropbox/Swansea/M79 - Interactive Devices/Happy Plant/app/libs/PhidgetsUSB.jar"
-        jumboMode="false" revision="21.1.2" sha1="3af784b2c71b8d0f9c6df513ec5ca3219e508621">
-        <dex
-            dex="/Users/michaelwaterworth/Dropbox/Swansea/M79 - Interactive Devices/Happy Plant/app/build/intermediates/pre-dexed/debug/PhidgetsUSB-907c0ed0aa6e1b64f2789f55aa7253cb5c005438.jar" />
+        jar="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/libs/internal_impl-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
+        <dex dex="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.3-d6d3f3059ff7982ab6bc49faf3ce6e7f093222ed.jar" />
     </item>
     <item
-        jar="/Users/michaelwaterworth/Dropbox/Swansea/M79 - Interactive Devices/Happy Plant/app/libs/phidget21.jar"
-        jumboMode="false" revision="21.1.2" sha1="46cfd6dce8f0db87a4fe3b42a49816b814209aa3">
-        <dex
-            dex="/Users/michaelwaterworth/Dropbox/Swansea/M79 - Interactive Devices/Happy Plant/app/build/intermediates/pre-dexed/debug/phidget21-6d289d9b4db9a29c3623a8155219042b0223a34a.jar" />
+        jar="/home/moody/Android/Sdk/extras/android/m2repository/com/android/support/support-annotations/21.0.3/support-annotations-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
+        <dex dex="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.3-b17a2f183dc7a303c4ddff4aa0858736f10a3c03.jar" />
     </item>
     <item
-        jar="/Users/michaelwaterworth/Dropbox/Swansea/M79 - Interactive Devices/Happy Plant/app/build/intermediates/exploded-aar/com.jjoe64/graphview/4.0.0/classes.jar"
-        jumboMode="false" revision="21.1.2" sha1="ae24ad61a573cd1faf8261f5ec6d8f0cb58ddaad">
-        <dex
-            dex="/Users/michaelwaterworth/Dropbox/Swansea/M79 - Interactive Devices/Happy Plant/app/build/intermediates/pre-dexed/debug/classes-89e2b5c923ee830c705f36b399611f81f30a3f8f.jar" />
+        jar="/home/moody/AndroidStudioProjects/HappyPlant/app/libs/phidget21.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="46cfd6dce8f0db87a4fe3b42a49816b814209aa3">
+        <dex dex="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/pre-dexed/debug/phidget21-59bed5b50f493d3b83f63d242b8585eb326d93b9.jar" />
     </item>
     <item
-        jar="/Applications/android-sdk/extras/android/m2repository/com/android/support/support-annotations/21.0.3/support-annotations-21.0.3.jar"
-        jumboMode="false" revision="21.1.2" sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
-        <dex
-            dex="/Users/michaelwaterworth/Dropbox/Swansea/M79 - Interactive Devices/Happy Plant/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.3-9efb50e665e2f7b4f151f0d6fefc895a6977f4dd.jar" />
+        jar="/home/moody/AndroidStudioProjects/HappyPlant/app/libs/PhidgetsUSB.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="3af784b2c71b8d0f9c6df513ec5ca3219e508621">
+        <dex dex="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/pre-dexed/debug/PhidgetsUSB-cf131fa3d04d3bc4a7d10555774d159e190a8ad2.jar" />
     </item>
     <item
-        jar="/Users/michaelwaterworth/Dropbox/Swansea/M79 - Interactive Devices/Happy Plant/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/libs/internal_impl-21.0.3.jar"
-        jumboMode="false" revision="21.1.2" sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
-        <dex
-            dex="/Users/michaelwaterworth/Dropbox/Swansea/M79 - Interactive Devices/Happy Plant/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.3-5ca415c22b2a5b2a0e128be190151f79c4e238c7.jar" />
+        jar="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/exploded-aar/com.jjoe64/graphview/4.0.0/classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="ae24ad61a573cd1faf8261f5ec6d8f0cb58ddaad">
+        <dex dex="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/pre-dexed/debug/classes-292b5658cda870937c7d5debc1bb5dbb84d2d2b8.jar" />
     </item>
     <item
-        jar="/Users/michaelwaterworth/Dropbox/Swansea/M79 - Interactive Devices/Happy Plant/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/classes.jar"
-        jumboMode="false" revision="21.1.2" sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
-        <dex
-            dex="/Users/michaelwaterworth/Dropbox/Swansea/M79 - Interactive Devices/Happy Plant/app/build/intermediates/pre-dexed/debug/classes-92deb524fe003b6a7513a86851602e3bb2d079b5.jar" />
+        jar="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
+        <dex dex="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/pre-dexed/debug/classes-aee1a92657da5ed2fae3591b9cc2269679f246bf.jar" />
     </item>
 
 </items>

@@ -70,9 +70,21 @@ public class EditRequiredValueActivity extends ActionBarActivity {
         NumberPicker maxNumberPicker = (NumberPicker) findViewById(R.id.maxReqValue);
 
         PlantDataRange newPlantDataRange = new PlantDataRange(CURR_SENSOR, CURR_SENSOR, minNumberPicker.getValue(), maxNumberPicker.getValue());
+        plantCurrentStatus.getGeneralPlantDataRange(CURR_SENSOR).setMinValue(newPlantDataRange.getMinValue());
+        plantCurrentStatus.getGeneralPlantDataRange(CURR_SENSOR).setMaxValue(newPlantDataRange.getMaxValue());
         dHandler.addRangeValues(newPlantDataRange);
 
+        sendMessageUpdateRange();
+
         finish();
+    }
+
+
+
+    private void sendMessageUpdateRange(){
+        Intent serviceIntent = new Intent(PlantDataService.class.getName());
+        serviceIntent.putExtra("CURRSTATUS", plantCurrentStatus);
+        startService(serviceIntent);
     }
 
 
@@ -91,13 +103,15 @@ public class EditRequiredValueActivity extends ActionBarActivity {
 
 
     public void refreshEditValues() {
-        int minValue = plantCurrentStatus.getGeneralPlantDataRange(CURR_SENSOR).getMinValue();
-        int maxValue = plantCurrentStatus.getGeneralPlantDataRange(CURR_SENSOR).getMaxValue();
+        int phiMinValue = PhidgeMetaInfo.minValues[CURR_SENSOR];
+        int phiMaxValue = PhidgeMetaInfo.maxValues[CURR_SENSOR];
+        int currMinValue = plantCurrentStatus.getGeneralPlantDataRange(CURR_SENSOR).getMinValue();
+        int currMaxValue = plantCurrentStatus.getGeneralPlantDataRange(CURR_SENSOR).getMaxValue();
 
         minNumberPicker = (NumberPicker) findViewById(R.id.minReqValue);
-        minNumberPicker.setMaxValue(maxValue);
-        minNumberPicker.setMinValue(0);
-        minNumberPicker.setValue(minValue);
+        minNumberPicker.setMaxValue(currMaxValue);
+        minNumberPicker.setMinValue(phiMinValue);
+        minNumberPicker.setValue(currMinValue);
         minNumberPicker.setOnValueChangedListener( new NumberPicker.
                 OnValueChangeListener() {
             @Override
@@ -106,10 +120,11 @@ public class EditRequiredValueActivity extends ActionBarActivity {
             }
         });
 
+
         maxNumberPicker = (NumberPicker) findViewById(R.id.maxReqValue);
-        maxNumberPicker.setMaxValue(100);
-        maxNumberPicker.setMinValue(minValue);
-        maxNumberPicker.setValue(maxValue);
+        maxNumberPicker.setMaxValue(phiMaxValue);
+        maxNumberPicker.setMinValue(currMinValue);
+        maxNumberPicker.setValue(currMaxValue);
         maxNumberPicker.setOnValueChangedListener( new NumberPicker.
                 OnValueChangeListener() {
             @Override

@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -37,6 +38,9 @@ public class PlantDataService extends Service{
     public InterfaceKitPhidget ik;
     private boolean isAttached;
 
+    PlantCurrentStatus plantCurrentStatus;
+    PlantCurrentStatus oldPlantCurrentStatus;
+
 
     private IBinder mBinder = new LocalBinder();
 
@@ -55,18 +59,43 @@ public class PlantDataService extends Service{
         @Override
         public void run() {
 
+
+            PlantStatusData[] oldPlantStatusData = plantCurrentStatus.getGeneralPlantStatusData();
+            PlantStatusData[] newPlantStatusData = plantCurrentStatus.getGeneralPlantStatusData();
+
             // Fake data
-            PlantStatusData[] newPlantStatusData = new PlantStatusData[3];
-            newPlantStatusData[0] = new PlantStatusData(0, (int) Math.round(Math.random() * 100), new Date());
-            newPlantStatusData[1] = new PlantStatusData(1, (int) Math.round(Math.random() * 100), new Date());
-            newPlantStatusData[2] = new PlantStatusData(2, (int) Math.round(Math.random() * 100), new Date());
+            int fakeValue;
+            fakeValue = (int) Math.round(Math.random() * 20) + 333;
+            fakeValue = PhidgeMetaInfo.filterValue(fakeValue, oldPlantStatusData[PhidgeMetaInfo.TEMP].getValue());
+            fakeValue = PhidgeMetaInfo.convertValue(PhidgeMetaInfo.TEMP, fakeValue);
+            newPlantStatusData[PhidgeMetaInfo.TEMP] = new PlantStatusData(PhidgeMetaInfo.TEMP, fakeValue, new Date());
+
+            fakeValue = (int) Math.round(Math.random() * 20) + 450;
+            fakeValue = PhidgeMetaInfo.filterValue(fakeValue, oldPlantStatusData[PhidgeMetaInfo.HUM].getValue());
+            fakeValue = PhidgeMetaInfo.convertValue(PhidgeMetaInfo.HUM, fakeValue);
+            newPlantStatusData[PhidgeMetaInfo.HUM] = new PlantStatusData(PhidgeMetaInfo.HUM, fakeValue, new Date());
+
+            fakeValue = (int) Math.round(Math.random() * 20) + 500;
+            fakeValue = PhidgeMetaInfo.filterValue(fakeValue, oldPlantStatusData[PhidgeMetaInfo.LIGHT].getValue());
+            fakeValue = PhidgeMetaInfo.convertValue(PhidgeMetaInfo.LIGHT, fakeValue);
+            newPlantStatusData[PhidgeMetaInfo.LIGHT] = new PlantStatusData(PhidgeMetaInfo.LIGHT, fakeValue, new Date());
+
+            dHandler.addStatusData( newPlantStatusData[PhidgeMetaInfo.TEMP]);
+            dHandler.addStatusData( newPlantStatusData[PhidgeMetaInfo.HUM]);
+            dHandler.addStatusData( newPlantStatusData[PhidgeMetaInfo.LIGHT]);
+            // end fake data
 
             Log.d("PlantDataService", "Logging data in service");
             if(isAttached){//Phidget attached
-                for( int i=0; i<3; i++) {
+                for( int sensor=0; sensor<3; sensor++) {
+                    // Filter the value
+
                     try {
-                        int value = ik.getSensorValue(i);
-                        newPlantStatusData[i] = new PlantStatusData(i, value, new Date());
+                        int value = ik.getSensorValue(sensor);
+                        value = PhidgeMetaInfo.filterValue(value, oldPlantStatusData[sensor].getValue());
+                        value = PhidgeMetaInfo.convertValue(sensor, value);
+                        newPlantStatusData[sensor] = new PlantStatusData(sensor, value, new Date());
+                        dHandler.addStatusData(newPlantStatusData[sensor]);
 
                     } catch(PhidgetException pException){
                         Log.d("PlantDataService", pException.toString());
@@ -74,26 +103,24 @@ public class PlantDataService extends Service{
                 }
             }
 
-
-            for(int i=0; i<3; i++)
-                dHandler.addStatusData(newPlantStatusData[i]);
+            plantCurrentStatus.setGeneralPlantStatusData(newPlantStatusData);
 
 
-            sendMessage(newPlantStatusData);
+            sendMessage();
             mHandler.postDelayed(this, 1000);
         }
     };
 
-    private void sendMessage(PlantStatusData[] newPlantStatusData){
-        PlantCurrentStatus plantCurrentStatus = new PlantCurrentStatus(newPlantStatusData, null);
 
+
+
+    private void sendMessage(){
         Intent intent = new Intent();
         intent.setAction("com.uni.swansea.happyplant.MessageReceiver");
         intent.putExtra("CURRSTATUS", plantCurrentStatus);
         intent.putExtra("PHIDGCONN", isAttached);
         sendBroadcast(intent);
     }
-
 
 
     private void registerPhidget(){
@@ -197,6 +224,8 @@ public class PlantDataService extends Service{
 
         this.isAttached = false;
         dHandler = PlantDatabaseHandler.getHelper(getApplicationContext());
+        plantCurrentStatus = dHandler.getUpdatedPlantCurrentStatus();
+
         mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         mHandler = new Handler();
         showNotification();
@@ -205,10 +234,22 @@ public class PlantDataService extends Service{
     }
 
     @Override
-    public void onStart(Intent intent, int startId) {
+    public int onStartCommand(Intent intent, int flags, int startId){
         Toast.makeText(this, "Plant Data Service Started", Toast.LENGTH_SHORT).show();
         mHandler.postDelayed(myTask, 1000);
         Log.d("PlantDataService", "onStart");
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            plantCurrentStatus = (PlantCurrentStatus) extras.getSerializable("CURRSTATUS");
+        }
+        return flags;
+    }
+
+
+
+    @Override
+    public void onStart(Intent intent, int startId) {
+
     }
 
     @Override
