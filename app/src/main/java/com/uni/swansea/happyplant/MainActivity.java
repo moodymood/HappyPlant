@@ -1,10 +1,7 @@
 package com.uni.swansea.happyplant;
 
-
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -13,10 +10,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.phidgets.InterfaceKitPhidget;
-
 import java.util.Date;
 
 public class MainActivity extends Activity {
@@ -37,21 +30,6 @@ public class MainActivity extends Activity {
         // Fake data
         // Clear db the first time the app is launched and put values for the last 2h
         dHandler.clearData();
-        dHandler.addRangeValues(new PlantDataRange(0,0,1,10));
-        dHandler.addRangeValues(new PlantDataRange(1, 1, 10, 20));
-        dHandler.addRangeValues(new PlantDataRange(2, 2, 20, 30));
-        //Create date an hour and a half ago.
-        Date oldDate = new Date(System.currentTimeMillis() - 5400 * 1000);
-        dHandler.addStatusData(new PlantStatusData(0, 32, oldDate));
-        dHandler.addStatusData(new PlantStatusData(1, 32, oldDate));
-        dHandler.addStatusData(new PlantStatusData(2, 32, oldDate));
-        // two and a half
-        oldDate = new Date(System.currentTimeMillis() - 9000 * 1000);
-        dHandler.addStatusData(new PlantStatusData(0, 26, oldDate));
-        dHandler.addStatusData(new PlantStatusData(1, 26, oldDate));
-        dHandler.addStatusData(new PlantStatusData(2, 26, oldDate));
-        // end fake data
-
 
         // Update the plantCurrentStatus and refresh all views (need to be the first thing)
         plantCurrentStatus = dHandler.getUpdatedPlantCurrentStatus();
@@ -125,7 +103,7 @@ public class MainActivity extends Activity {
             protected void onMessageReceived(){
                 Log.d("MainActivity", "receiving message");
 
-                Toast.makeText(getApplicationContext(), plantCurrentStatus.toString(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), plantCurrentStatus.toString(), Toast.LENGTH_SHORT).show();
 
                 plantCurrentStatus.setGeneralPlantStatusData(getBroadcastCurrentStatus().getGeneralPlantStatusData());
                 updateSensorView(PhidgeMetaInfo.TEMP);
