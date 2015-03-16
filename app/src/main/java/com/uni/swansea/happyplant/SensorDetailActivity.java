@@ -59,8 +59,7 @@ public class SensorDetailActivity extends ActionBarActivity {
     }
 
 
-    protected void onActivityResult(int requestCode, int resultCode,
-                                    Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Data must be refreshed from the db
         plantCurrentStatus = dHandler.getUpdatedPlantCurrentStatus();
         refreshHeader();
@@ -100,7 +99,6 @@ public class SensorDetailActivity extends ActionBarActivity {
     // Refresh header if values has been changed
     public void refreshHeader(){
 
-
         ImageView sensorStatusImg = (ImageView) findViewById(R.id.sensorStatusImg);
         if (plantCurrentStatus.sensorIsOK(CURR_SENSOR))
             sensorStatusImg.setImageResource(R.drawable.green_led);
@@ -110,6 +108,7 @@ public class SensorDetailActivity extends ActionBarActivity {
         TextView sensorLabelText = (TextView) findViewById(R.id.sensorLabelText);
         sensorLabelText.setText(PlantMetaInfo.labels[CURR_SENSOR]);
     }
+
 
     // Refresh value if they has been changed
     public void refreshSensorValues(){
@@ -133,44 +132,63 @@ public class SensorDetailActivity extends ActionBarActivity {
 
         List<PlantStatusData> plantStatusData = dHandler.findByTypeGroupedHour(CURR_SENSOR);
 
-        GraphView graph = (GraphView) findViewById(R.id.graph1);
-        graph.removeAllSeries();
-        graph.getGridLabelRenderer().setNumHorizontalLabels(24);
-        graph.getGridLabelRenderer().setTextSize(25);
-        graph.getViewport().setXAxisBoundsManual(true);
-        graph.getViewport().setMinX(0);
-        graph.getViewport().setMaxX(23);
-        graph.setTitle("Today");
+        GraphView todayGraph = (GraphView) findViewById(R.id.graph1);
+        todayGraph.removeAllSeries();
+        todayGraph.getGridLabelRenderer().setNumHorizontalLabels(24);
+        todayGraph.getGridLabelRenderer().setTextSize(25);
+        todayGraph.getViewport().setXAxisBoundsManual(true);
+        todayGraph.getViewport().setMinX(0);
+        todayGraph.getViewport().setMaxX(23);
+        todayGraph.setTitle("Today");
 
-        DataPoint[] graphDataPoint = new DataPoint[plantStatusData.size()];
+        GraphView yesterdayGraph = (GraphView) findViewById(R.id.graph2);
+        yesterdayGraph.removeAllSeries();
+        yesterdayGraph.getGridLabelRenderer().setNumHorizontalLabels(24);
+        yesterdayGraph.getGridLabelRenderer().setTextSize(25);
+        yesterdayGraph.getViewport().setXAxisBoundsManual(true);
+        yesterdayGraph.getViewport().setMinX(0);
+        yesterdayGraph.getViewport().setMaxX(23);
+        yesterdayGraph.setTitle("Yesterday");
+
+
+        DataPoint[] todayDataPoint = new DataPoint[plantStatusData.size()];
+        DataPoint[] yesterdayDataPoint = new DataPoint[24];
         DataPoint[] minDataPoint = new DataPoint[24];
         DataPoint[] maxDataPoint = new DataPoint[24];
 
 
-        for(int i = 0; i<plantStatusData.size(); i++){
-            graphDataPoint[i] = new DataPoint(getHourFromDate(plantStatusData.get(i).getTimeStamp()), plantStatusData.get(i).getValue());
+        for(int i=0; i<plantStatusData.size(); i++){
+            todayDataPoint[i] = new DataPoint(getHourFromDate(plantStatusData.get(i).getTimeStamp()), plantStatusData.get(i).getValue());
         }
 
-        for(int i =0; i<24; i++) {
+        for(int i=0; i<24; i++) {
             minDataPoint[i] = new DataPoint(i, plantCurrentStatus.getGeneralPlantDataRange(CURR_SENSOR).getMinValue());
             maxDataPoint[i] = new DataPoint(i, plantCurrentStatus.getGeneralPlantDataRange(CURR_SENSOR).getMaxValue());
+            yesterdayDataPoint[i] = new DataPoint(i, (int) Math.round(Math.random() * 5) + 20);
         }
 
-        LineGraphSeries<DataPoint> graphSeries = new LineGraphSeries<>(graphDataPoint);
+        LineGraphSeries<DataPoint> todaySeries = new LineGraphSeries<>(todayDataPoint);
+        LineGraphSeries<DataPoint> yesterdaySeries = new LineGraphSeries<>(yesterdayDataPoint);
+
         LineGraphSeries<DataPoint> minSeries = new LineGraphSeries<>(minDataPoint);
         LineGraphSeries<DataPoint> maxSeries = new LineGraphSeries<>(maxDataPoint);
 
 
-        graphSeries.setThickness(5);
+        todaySeries.setThickness(5);
+        yesterdaySeries.setThickness(5);
         minSeries.setThickness(2);
         maxSeries.setThickness(2);
         minSeries.setColor(Color.RED);
         maxSeries.setColor(Color.RED);
 
-        graph.addSeries(graphSeries);
-        graph.addSeries(minSeries);
+        todayGraph.addSeries(todaySeries);
+        todayGraph.addSeries(minSeries);
+        todayGraph.addSeries(maxSeries);
 
-        graph.addSeries(maxSeries);
+
+        yesterdayGraph.addSeries(yesterdaySeries);
+        yesterdayGraph.addSeries(minSeries);
+        yesterdayGraph.addSeries(maxSeries);
     }
 
 
@@ -189,6 +207,7 @@ public class SensorDetailActivity extends ActionBarActivity {
         int res = calendar.get(Calendar.HOUR_OF_DAY);
         return res;
     }
+
 
     // Intent for changing required values
     public void editRequiredValue(View view)

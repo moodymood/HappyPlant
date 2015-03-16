@@ -59,25 +59,24 @@ public class PlantDataService extends Service{
         @Override
         public void run() {
 
-
             PlantStatusData[] oldPlantStatusData = plantCurrentStatus.getGeneralPlantStatusData();
             PlantStatusData[] newPlantStatusData = plantCurrentStatus.getGeneralPlantStatusData();
 
-            // Fake data
+            // Fake data - comment when using the phidget values
             int fakeValue;
-            fakeValue = (int) Math.round(Math.random() * 20) + 333;
-            fakeValue = PhidgeMetaInfo.filterValue(fakeValue, oldPlantStatusData[PhidgeMetaInfo.TEMP].getValue());
+            fakeValue = (int) Math.round(Math.random() * 20) + 400;
             fakeValue = PhidgeMetaInfo.convertValue(PhidgeMetaInfo.TEMP, fakeValue);
+            fakeValue = PhidgeMetaInfo.filterValue(fakeValue, oldPlantStatusData[PhidgeMetaInfo.TEMP].getValue());
             newPlantStatusData[PhidgeMetaInfo.TEMP] = new PlantStatusData(PhidgeMetaInfo.TEMP, fakeValue, new Date());
 
             fakeValue = (int) Math.round(Math.random() * 20) + 450;
-            fakeValue = PhidgeMetaInfo.filterValue(fakeValue, oldPlantStatusData[PhidgeMetaInfo.HUM].getValue());
             fakeValue = PhidgeMetaInfo.convertValue(PhidgeMetaInfo.HUM, fakeValue);
+            fakeValue = PhidgeMetaInfo.filterValue(fakeValue, oldPlantStatusData[PhidgeMetaInfo.HUM].getValue());
             newPlantStatusData[PhidgeMetaInfo.HUM] = new PlantStatusData(PhidgeMetaInfo.HUM, fakeValue, new Date());
 
             fakeValue = (int) Math.round(Math.random() * 20) + 500;
-            fakeValue = PhidgeMetaInfo.filterValue(fakeValue, oldPlantStatusData[PhidgeMetaInfo.LIGHT].getValue());
             fakeValue = PhidgeMetaInfo.convertValue(PhidgeMetaInfo.LIGHT, fakeValue);
+            fakeValue = PhidgeMetaInfo.filterValue(fakeValue, oldPlantStatusData[PhidgeMetaInfo.LIGHT].getValue());
             newPlantStatusData[PhidgeMetaInfo.LIGHT] = new PlantStatusData(PhidgeMetaInfo.LIGHT, fakeValue, new Date());
 
             dHandler.addStatusData( newPlantStatusData[PhidgeMetaInfo.TEMP]);
@@ -88,12 +87,10 @@ public class PlantDataService extends Service{
             Log.d("PlantDataService", "Logging data in service");
             if(isAttached){//Phidget attached
                 for( int sensor=0; sensor<3; sensor++) {
-                    // Filter the value
-
                     try {
                         int value = ik.getSensorValue(sensor);
-                        value = PhidgeMetaInfo.filterValue(value, oldPlantStatusData[sensor].getValue());
                         value = PhidgeMetaInfo.convertValue(sensor, value);
+                        value = PhidgeMetaInfo.filterValue(value, oldPlantStatusData[sensor].getValue());
                         newPlantStatusData[sensor] = new PlantStatusData(sensor, value, new Date());
                         dHandler.addStatusData(newPlantStatusData[sensor]);
 
@@ -103,15 +100,13 @@ public class PlantDataService extends Service{
                 }
             }
 
+            // Update the plantCurrentStatus with the last read value
             plantCurrentStatus.setGeneralPlantStatusData(newPlantStatusData);
-
 
             sendMessage();
             mHandler.postDelayed(this, 1000);
         }
     };
-
-
 
 
     private void sendMessage(){
@@ -197,6 +192,7 @@ public class PlantDataService extends Service{
         }
     }
 
+
     private void showNotification() {
         // In this sample, we'll use the same text for the ticker and the expanded notification
         CharSequence text = "Service Running";
@@ -233,6 +229,7 @@ public class PlantDataService extends Service{
         registerPhidget();
     }
 
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
         Toast.makeText(this, "Plant Data Service Started", Toast.LENGTH_SHORT).show();
@@ -245,12 +242,6 @@ public class PlantDataService extends Service{
         return flags;
     }
 
-
-
-    @Override
-    public void onStart(Intent intent, int startId) {
-
-    }
 
     @Override
     public void onDestroy() {

@@ -33,22 +33,24 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);
 
         dHandler = PlantDatabaseHandler.getHelper(getApplicationContext());
+
+        // Fake data
+        // Clear db the first time the app is launched and put values for the last 2h
         dHandler.clearData();
         dHandler.addRangeValues(new PlantDataRange(0,0,1,10));
         dHandler.addRangeValues(new PlantDataRange(1, 1, 10, 20));
         dHandler.addRangeValues(new PlantDataRange(2, 2, 20, 30));
         //Create date an hour and a half ago.
         Date oldDate = new Date(System.currentTimeMillis() - 5400 * 1000);
-        dHandler.addStatusData(new PlantStatusData(0, 20, oldDate));
-        dHandler.addStatusData(new PlantStatusData(1, 20, oldDate));
-        dHandler.addStatusData(new PlantStatusData(2, 20, oldDate));
+        dHandler.addStatusData(new PlantStatusData(0, 32, oldDate));
+        dHandler.addStatusData(new PlantStatusData(1, 32, oldDate));
+        dHandler.addStatusData(new PlantStatusData(2, 32, oldDate));
         // two and a half
         oldDate = new Date(System.currentTimeMillis() - 9000 * 1000);
         dHandler.addStatusData(new PlantStatusData(0, 26, oldDate));
         dHandler.addStatusData(new PlantStatusData(1, 26, oldDate));
         dHandler.addStatusData(new PlantStatusData(2, 26, oldDate));
-
-
+        // end fake data
 
 
         // Update the plantCurrentStatus and refresh all views (need to be the first thing)
@@ -70,9 +72,11 @@ public class MainActivity extends Activity {
 
     }
 
+
     protected void onPause() {
         super.onPause();
     }
+
 
     @Override
     public void onResume() {
@@ -100,6 +104,7 @@ public class MainActivity extends Activity {
             }
         });
     }
+
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -137,7 +142,6 @@ public class MainActivity extends Activity {
     }
 
 
-
     // Update the status message for the plant
     public void updatePlantStatusView() {
         TextView plantStatusText = (TextView) findViewById(R.id.plantStatusMessage);
@@ -148,6 +152,7 @@ public class MainActivity extends Activity {
             plantStatusText.setText(R.string.plantStatusMessageKO);
         }
     }
+
 
     // Update the status image of currSensor
     public void updateSensorView(int CURR_SENSOR){
@@ -171,6 +176,7 @@ public class MainActivity extends Activity {
     }
 
 
+    // Update phidget connection icon
     void updatePhidgetImg(boolean phidgetIsConnected){
         ImageView phidgetStatusImg = (ImageView) findViewById(R.id.phidgetStatusImg);
 
@@ -188,7 +194,6 @@ public class MainActivity extends Activity {
         startActivity(intent);
     }
 
-    // Intent methods, called when the user touch a specific sensor
     public void tempDetail(View view)
     {
         createDetailsIntent(PhidgeMetaInfo.TEMP);

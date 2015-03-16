@@ -44,7 +44,6 @@ public class PhidgeMetaInfo {
 
     public static int filterValue(int current, int last){
         double a = 0.1;
-
         return (int) Math.round(last * (1.0 - a) + current * a);
 
     }
