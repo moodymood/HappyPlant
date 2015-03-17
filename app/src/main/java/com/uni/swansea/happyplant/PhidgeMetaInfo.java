@@ -20,8 +20,8 @@ public class PhidgeMetaInfo {
     public static int[] maxValues =
             {
                    80,
-                   95,
-                   660
+                   660,
+                   95
             };
 
 
@@ -33,7 +33,6 @@ public class PhidgeMetaInfo {
         }
         // Light (Lux)  = (Sensor value * 0.22222) - 61.11
         else if(sensor == LIGHT){
-
             return (int) Math.round((value * 0.22222) - 61.11);
         }
         // Humidity (RH%) = (Sensor value * 0.1906) - 40.2
