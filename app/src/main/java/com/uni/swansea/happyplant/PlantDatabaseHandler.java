@@ -82,7 +82,21 @@ public class PlantDatabaseHandler extends SQLiteOpenHelper {
         db.execSQL(createValuesTable);
         db.execSQL(createRangeTable);
 
+        createSensorRangeDefaults();
+        createValuesDefaults();
+    }
 
+    public void createSensorRangeDefaults(){
+        this.addRangeValues(new PlantDataRange(0,0,1,10));
+        this.addRangeValues(new PlantDataRange(1, 1, 10, 20));
+        this.addRangeValues(new PlantDataRange(2, 2, 20, 30));
+    }
+
+    public void createValuesDefaults(){
+        Date oldDate = new Date(System.currentTimeMillis() - 5400 * 1000);
+        this.addStatusData(new PlantStatusData(0, 0, oldDate));
+        this.addStatusData(new PlantStatusData(1, 0, oldDate));
+        this.addStatusData(new PlantStatusData(2, 0, oldDate));
     }
 
     @Override
@@ -96,6 +110,8 @@ public class PlantDatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DELETE FROM " + TABLE_SENSORVALUES);
         db.execSQL("DELETE FROM " + TABLE_SENSORRANGES);
+        createSensorRangeDefaults();
+        createValuesDefaults();
     }
 
 
