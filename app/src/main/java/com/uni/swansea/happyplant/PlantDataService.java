@@ -4,11 +4,13 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -32,6 +34,9 @@ public class PlantDataService extends Service{
     private NotificationManager mNM;
     PlantDatabaseHandler dHandler;
 
+    Handler handler;
+
+
     private int NOTIFICATION = 11;
     private Handler mHandler;
 
@@ -41,6 +46,8 @@ public class PlantDataService extends Service{
     PlantCurrentStatus plantCurrentStatus;
     PlantCurrentStatus oldPlantCurrentStatus;
 
+    PlantStatusData[] oldPlantStatusData;
+    PlantStatusData[] newPlantStatusData;
 
     private IBinder mBinder = new LocalBinder();
 
@@ -50,47 +57,19 @@ public class PlantDataService extends Service{
     }
 
     public class LocalBinder extends Binder {
-        public PlantDataService getServerInstance() {
-            return PlantDataService.this;
-        }
     }
 
     private Runnable myTask = new Runnable() {
         @Override
         public void run() {
 
-            PlantStatusData[] oldPlantStatusData = plantCurrentStatus.getGeneralPlantStatusData();
-            PlantStatusData[] newPlantStatusData = plantCurrentStatus.getGeneralPlantStatusData();
-
-            // Fake data - comment when using the phidget values
-            int fakeValue;
-            fakeValue = (int) Math.round(Math.random() * 20) + 400;
-            fakeValue = PhidgeMetaInfo.convertValue(PhidgeMetaInfo.TEMP, fakeValue);
-            fakeValue = PhidgeMetaInfo.filterValue(fakeValue, oldPlantStatusData[PhidgeMetaInfo.TEMP].getValue());
-            newPlantStatusData[PhidgeMetaInfo.TEMP] = new PlantStatusData(PhidgeMetaInfo.TEMP, fakeValue, new Date());
-
-            fakeValue = (int) Math.round(Math.random() * 20) + 450;
-            fakeValue = PhidgeMetaInfo.convertValue(PhidgeMetaInfo.HUM, fakeValue);
-            fakeValue = PhidgeMetaInfo.filterValue(fakeValue, oldPlantStatusData[PhidgeMetaInfo.HUM].getValue());
-            newPlantStatusData[PhidgeMetaInfo.HUM] = new PlantStatusData(PhidgeMetaInfo.HUM, fakeValue, new Date());
-
-            fakeValue = (int) Math.round(Math.random() * 20) + 500;
-            fakeValue = PhidgeMetaInfo.convertValue(PhidgeMetaInfo.LIGHT, fakeValue);
-            fakeValue = PhidgeMetaInfo.filterValue(fakeValue, oldPlantStatusData[PhidgeMetaInfo.LIGHT].getValue());
-            newPlantStatusData[PhidgeMetaInfo.LIGHT] = new PlantStatusData(PhidgeMetaInfo.LIGHT, fakeValue, new Date());
-
-            dHandler.addStatusData( newPlantStatusData[PhidgeMetaInfo.TEMP]);
-            dHandler.addStatusData( newPlantStatusData[PhidgeMetaInfo.HUM]);
-            dHandler.addStatusData( newPlantStatusData[PhidgeMetaInfo.LIGHT]);
-            // end fake data
-
             Log.d("PlantDataService", "Logging data in service");
             if(isAttached){//Phidget attached
                 for( int sensor=0; sensor<3; sensor++) {
                     try {
                         int value = ik.getSensorValue(sensor);
-                        value = PhidgeMetaInfo.convertValue(sensor, value);
-                        value = PhidgeMetaInfo.filterValue(value, oldPlantStatusData[sensor].getValue());
+                        //value = PhidgeMetaInfo.convertValue(sensor, value);
+                        //value = PhidgeMetaInfo.filterValue(value, oldPlantStatusData[sensor].getValue());
                         newPlantStatusData[sensor] = new PlantStatusData(sensor, value, new Date());
                         dHandler.addStatusData(newPlantStatusData[sensor]);
 
@@ -98,15 +77,34 @@ public class PlantDataService extends Service{
                         Log.d("PlantDataService", pException.toString());
                     }
                 }
+            } else if(true) {
+                for( int sensor=0; sensor<3; sensor++) {
+                    // Fake data - comment when using the phidget values
+                    int fakeValue;
+                    fakeValue = (int) Math.round(Math.random() * 50) + 200;
+                    newPlantStatusData[sensor] = new PlantStatusData(sensor, fakeValue, new Date());
+                    dHandler.addStatusData(newPlantStatusData[PhidgeMetaInfo.TEMP]);
+                    // end fake data
+                }
             }
 
             // Update the plantCurrentStatus with the last read value
             plantCurrentStatus.setGeneralPlantStatusData(newPlantStatusData);
 
+            showValuesInNotifcation();
+
             sendMessage();
             mHandler.postDelayed(this, 1000);
         }
     };
+
+    public void showValuesInNotifcation(){
+
+        showNotification("0: " + plantCurrentStatus.getGeneralPlantStatusData(0).getValue() +
+                        " 1: " + plantCurrentStatus.getGeneralPlantStatusData(1).getValue() +
+                        " 2: " + plantCurrentStatus.getGeneralPlantStatusData(2).getValue()
+        );
+    }
 
 
     private void sendMessage(){
@@ -177,11 +175,12 @@ public class PlantDataService extends Service{
                     }
                 }
             });
-//            ik.addSensorChangeListener(new SensorChangeListener() {
-//                public void sensorChanged(SensorChangeEvent se) {
-//                    runOnUiThread(new SensorChangeRunnable(se.getIndex(), se.getValue()));
-//                }
-//            });
+
+            ik.addSensorChangeListener(new SensorChangeListener() {
+                public void sensorChanged(SensorChangeEvent se) {
+                    runOnUiThread(new SensorChangeRunnable(se.getIndex(), se.getValue()));
+                }
+            });
             ik.openAny();
 
 
@@ -192,39 +191,54 @@ public class PlantDataService extends Service{
         }
     }
 
+    private void runOnUiThread(Runnable runnable) {
+        handler.post(runnable);
+    }
 
-    private void showNotification() {
-        // In this sample, we'll use the same text for the ticker and the expanded notification
-        CharSequence text = "Service Running";
+    private void showNotification(String details) {
 
-        // Set the icon, scrolling text and timestamp
-        Notification notification = new Notification(R.drawable.ic_launcher, text,
-                System.currentTimeMillis());
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setContentTitle("Happy Plant")
+                        .setContentText(details);
+
+
+        Intent resultIntent = new Intent(this, MainActivity.class);
+
 
         // The PendingIntent to launch our activity if the user selects this notification
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, MainActivity.class), 0);
 
-        // Set the info for the views that show in the notification panel.
-        //getText(R.string.local_service_label)
-        notification.setLatestEventInfo(this, "HappyPlant",
-                text, contentIntent);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+
+        // Adds the back stack for the Intent (but not the Intent itself)
+        stackBuilder.addParentStack(MainActivity.class);
+
+        // Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
 
         // Send the notification.
-        mNM.notify(NOTIFICATION, notification);
+        mNM.notify(NOTIFICATION, mBuilder.build());
     }
 
 
     @Override
     public void onCreate() {
+        handler = new Handler();
+
 
         this.isAttached = false;
         dHandler = PlantDatabaseHandler.getHelper(getApplicationContext());
         plantCurrentStatus = dHandler.getUpdatedPlantCurrentStatus();
 
+        oldPlantStatusData = plantCurrentStatus.getGeneralPlantStatusData();
+        newPlantStatusData = plantCurrentStatus.getGeneralPlantStatusData();
+
         mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         mHandler = new Handler();
-        showNotification();
+        showNotification("Service started");
 
         registerPhidget();
     }
@@ -257,4 +271,23 @@ public class PlantDataService extends Service{
         com.phidgets.usb.Manager.Uninitialize();
         Log.d("PlantDataService", "onDestroy");
     }
+
+    class SensorChangeRunnable implements Runnable {
+        int sensorIndex, sensorVal;
+
+        public SensorChangeRunnable(int index, int val)
+        {
+            this.sensorIndex = index;
+            this.sensorVal = val;
+
+        }
+        public void run() {
+            newPlantStatusData[sensorIndex] = new PlantStatusData(sensorIndex, sensorVal, new Date());
+            plantCurrentStatus.setGeneralPlantStatusData(newPlantStatusData);
+
+            dHandler.addStatusData(newPlantStatusData[sensorIndex]);
+            showValuesInNotifcation();
+        }
+    }
 }
+
