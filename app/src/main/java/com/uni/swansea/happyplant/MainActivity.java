@@ -45,13 +45,12 @@ public class MainActivity extends Activity {
 
 
     protected void onStart() {
-        super.onPause();
-        addCustomReceiver();
-
+        super.onStart();
     }
 
 
     protected void onPause() {
+        unregisterReceiver(messageReceiver);
         super.onPause();
     }
 
@@ -64,6 +63,7 @@ public class MainActivity extends Activity {
         updateSensorView(PhidgeMetaInfo.LIGHT);
         updateSensorView(PhidgeMetaInfo.HUM);
         updatePlantStatusView();
+        addCustomReceiver();
     }
 
 
