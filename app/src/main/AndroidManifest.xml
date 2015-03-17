@@ -8,6 +8,8 @@
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="18" />
 
+    <uses-sdk android:minSdkVersion="18" />
+
     <uses-feature
         android:name="android.hardware.usb.host" />
 

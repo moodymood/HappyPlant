@@ -36,7 +36,6 @@ public class PlantDataService extends Service{
 
     Handler handler;
 
-
     private int NOTIFICATION = 11;
     private Handler mHandler;
 
@@ -72,7 +71,7 @@ public class PlantDataService extends Service{
                         //value = PhidgeMetaInfo.filterValue(value, oldPlantStatusData[sensor].getValue());
                         newPlantStatusData[sensor] = new PlantStatusData(sensor, value, new Date());
                         dHandler.addStatusData(newPlantStatusData[sensor]);
-
+                        Log.d("PlantDataService", "Is attached logging: " + sensor);
                     } catch(PhidgetException pException){
                         Log.d("PlantDataService", pException.toString());
                     }
@@ -84,6 +83,7 @@ public class PlantDataService extends Service{
                     fakeValue = (int) Math.round(Math.random() * 50) + 200;
                     newPlantStatusData[sensor] = new PlantStatusData(sensor, fakeValue, new Date());
                     dHandler.addStatusData(newPlantStatusData[PhidgeMetaInfo.TEMP]);
+                    Log.d("PlantDataService", "!!!--Isn't attached logging: " + sensor + "--!!!");
                     // end fake data
                 }
             }
@@ -115,32 +115,32 @@ public class PlantDataService extends Service{
         sendBroadcast(intent);
     }
 
-
-    private void registerPhidget(){
-        class AttachDetachRunnable implements Runnable {
-            Phidget phidget;
-            boolean attach;
-            public AttachDetachRunnable(Phidget phidget, boolean attach)
+    class AttachDetachRunnable implements Runnable {
+        Phidget phidget;
+        boolean attach;
+        public AttachDetachRunnable(Phidget phidget, boolean attach)
+        {
+            this.phidget = phidget;
+            this.attach = attach;
+        }
+        public void run() {
+            Log.d("AttachEvent", "Attached = " + attach);
+            if(attach)
             {
-                this.phidget = phidget;
-                this.attach = attach;
+                isAttached = true;
             }
-            public void run() {
-                if(attach)
-                {
-                    isAttached = true;
-                }
-                else {
-                    isAttached = false;
-                }
+            else {
+                isAttached = false;
+            }
 
-                synchronized(this)
-                {
-                    this.notify();
-                }
+            synchronized(this)
+            {
+                this.notify();
             }
         }
+    }
 
+    private void registerPhidget(){
 
         try
         {
@@ -149,12 +149,12 @@ public class PlantDataService extends Service{
             ik = new InterfaceKitPhidget();
             ik.addAttachListener(new AttachListener() {
                 public void attached(final AttachEvent ae) {
-                    AttachDetachRunnable handler = new AttachDetachRunnable(ae.getSource(), true);
-                    synchronized(handler)
+                   AttachDetachRunnable handlerAt = new AttachDetachRunnable(ae.getSource(), true);
+                    synchronized(handlerAt)
                     {
-                        handler.run();
+                        runOnUiThread(handlerAt);
                         try {
-                            handler.wait();
+                            handlerAt.wait();
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -163,12 +163,12 @@ public class PlantDataService extends Service{
             });
             ik.addDetachListener(new DetachListener() {
                 public void detached(final DetachEvent ae) {
-                    AttachDetachRunnable handler = new AttachDetachRunnable(ae.getSource(), false);
-                    synchronized(handler)
+                    AttachDetachRunnable handlerDe = new AttachDetachRunnable(ae.getSource(), false);
+                    synchronized(handlerDe)
                     {
-                        handler.run();
+                        runOnUiThread(handlerDe);
                         try {
-                            handler.wait();
+                            handlerDe.wait();
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -228,7 +228,6 @@ public class PlantDataService extends Service{
     public void onCreate() {
         handler = new Handler();
 
-
         this.isAttached = false;
         dHandler = PlantDatabaseHandler.getHelper(getApplicationContext());
         plantCurrentStatus = dHandler.getUpdatedPlantCurrentStatus();
@@ -282,10 +281,11 @@ public class PlantDataService extends Service{
 
         }
         public void run() {
-            newPlantStatusData[sensorIndex] = new PlantStatusData(sensorIndex, sensorVal, new Date());
-            plantCurrentStatus.setGeneralPlantStatusData(newPlantStatusData);
+            Log.d("SensorChangeEvent", "Running the SensorChange");
+            //newPlantStatusData[sensorIndex] = new PlantStatusData(sensorIndex, sensorVal, new Date());
+            //plantCurrentStatus.setGeneralPlantStatusData(newPlantStatusData);
 
-            dHandler.addStatusData(newPlantStatusData[sensorIndex]);
+            //dHandler.addStatusData(newPlantStatusData[sensorIndex]);
             showValuesInNotifcation();
         }
     }

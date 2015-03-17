@@ -24,7 +24,7 @@ public  class MessageReceiver extends BroadcastReceiver
         if (extras != null) {
             newPlantCurrentStatus = (PlantCurrentStatus) extras.getSerializable("CURRSTATUS");
             phidgetIsConnected = (boolean) extras.get("PHIDGCONN");
-            Log.d("Receiver", newPlantCurrentStatus.toString());
+            //Log.d("Receiver", newPlantCurrentStatus.toString());
         }
         onMessageReceived();
     }
