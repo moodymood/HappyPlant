@@ -105,18 +105,16 @@
                 android:layout_marginBottom="20dp"
                 android:weightSum="1">
 
-                <com.jjoe64.graphview.GraphView
-                    android:layout_width="wrap_content"
-                    android:layout_height="200dp"
-                    android:id="@+id/graph1"
-                    android:layout_marginTop="15dp" />
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/lastHourChart"
+                    android:layout_width="match_parent"
+                    android:layout_height="227dp"
+                    android:layout_marginBottom="25dp" />
 
-                <com.jjoe64.graphview.GraphView
-                    android:layout_width="wrap_content"
-                    android:layout_height="200dp"
-                    android:id="@+id/graph2"
-                    android:layout_marginTop="15dp" />
-
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/lastDayChart"
+                    android:layout_width="match_parent"
+                    android:layout_height="227dp" />
 
 
             </LinearLayout>

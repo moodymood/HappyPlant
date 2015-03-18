@@ -93,10 +93,22 @@ public class PlantDatabaseHandler extends SQLiteOpenHelper {
     }
 
     public void createValuesDefaults(){
-        Date oldDate = new Date(System.currentTimeMillis() - 5400 * 1000);
+        Date oldDate = new Date(System.currentTimeMillis() - 1 * 60 * 1000);
         this.addStatusData(new PlantStatusData(0, 0, oldDate));
         this.addStatusData(new PlantStatusData(1, 0, oldDate));
         this.addStatusData(new PlantStatusData(2, 0, oldDate));
+        oldDate = new Date(System.currentTimeMillis() - 2 * 60 * 1000);
+        this.addStatusData(new PlantStatusData(0, 0, oldDate));
+        this.addStatusData(new PlantStatusData(1, 0, oldDate));
+        this.addStatusData(new PlantStatusData(2, 0, oldDate));
+
+        // Put data for the last 24h until the current moment
+        for(int i = 1; i<24; i++){
+            oldDate = new Date(System.currentTimeMillis() - i * 60 * 60 * 1000 - 60);
+         //   this.addStatusData(new PlantStatusData(0, 0, oldDate));
+        //    this.addStatusData(new PlantStatusData(1, 0, oldDate));
+         //   this.addStatusData(new PlantStatusData(2, 0, oldDate));
+        }
     }
 
     @Override
@@ -175,6 +187,35 @@ public class PlantDatabaseHandler extends SQLiteOpenHelper {
         //"select strftime('%Y-%m-%dT%00:00:00.000', date_time),line, count() from entry group by strftime('%Y-%m-%dT%00:00:00.000', date_time)";//Day
         PlantStatusData statusData;
         String query = "select strftime('%Y-%m-%d %H:00:00', " + COLUMN_TIMESTAMP + "), avg(" + COLUMN_SENSORVALUE + ") from " + TABLE_SENSORVALUES + " where " + COLUMN_SENSORTYPE + " = " + statusType + " group by strftime('%Y-%m-%d %H:00:00', " + COLUMN_TIMESTAMP + ")";
+
+        //String query = "Select * FROM " + TABLE_PRODUCTS + " WHERE " + COLUMN_PRODUCTNAME + " =  \"" + productname + "\"";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        List<PlantStatusData> statusDataList = new ArrayList<>();
+
+        while (cursor.moveToNext()) {
+            try {
+                statusData = new PlantStatusData();
+                statusData.setType(statusType);
+                statusData.setTimeStamp(format.parse(cursor.getString(0)));
+                statusData.setValue(Math.round(cursor.getInt(1)));
+                statusDataList.add(statusData);
+            } catch (ParseException e){
+                System.out.println("Failed to parse Date from DB");
+            }
+        }
+        cursor.close();
+        db.close();
+        return statusDataList;
+    }
+
+    public List<PlantStatusData> findByTypeGroupedHourMinutes(int statusType) {
+        //"select strftime('%Y-%m-%dT%00:00:00.000', date_time),line, count() from entry group by strftime('%Y-%m-%dT%00:00:00.000', date_time)";//Day
+        PlantStatusData statusData;
+        String query = "select strftime('%Y-%m-%d %H:%M:00', " + COLUMN_TIMESTAMP + "), " + COLUMN_SENSORVALUE + " from " + TABLE_SENSORVALUES + " where " + COLUMN_SENSORTYPE + " = " + statusType + " group by strftime('%Y-%m-%d %H:%M:00', " + COLUMN_TIMESTAMP + ") order by " + COLUMN_TIMESTAMP  + "  DESC";
 
         //String query = "Select * FROM " + TABLE_PRODUCTS + " WHERE " + COLUMN_PRODUCTNAME + " =  \"" + productname + "\"";
 
