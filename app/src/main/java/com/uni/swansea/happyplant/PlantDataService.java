@@ -99,20 +99,37 @@ public class PlantDataService extends Service{
     };
 
     public void showValuesInNotifcation(){
+        //check each sensor against function
+        int i = 0;
+        String statusText = "";
+        while(i < 3){
+            statusText += getSensorBoundsString(i);
+            if(plantCurrentStatus.sensorIsInBounds(i) != 0){
+                break;
+            }
+            i++;
+        }
+        showNotification(statusText);
+    }
 
-        showNotification("0: " + plantCurrentStatus.getGeneralPlantStatusData(0).getValue() +
-                        " 1: " + plantCurrentStatus.getGeneralPlantStatusData(1).getValue() +
-                        " 2: " + plantCurrentStatus.getGeneralPlantStatusData(2).getValue()
-        );
+    public String getSensorBoundsString(int sensor){
+        int sensorinBounds = plantCurrentStatus.sensorIsInBounds(sensor);
+        if(sensorinBounds > 0){
+            return PlantMetaInfo.labels[sensor] + " is too high";
+        }
+        if(sensorinBounds < 0){
+            return PlantMetaInfo.labels[sensor] + " is too low";
+        }
+        return "";
     }
 
 
     private void sendMessage(){
-        Intent intent = new Intent();
-        intent.setAction("com.uni.swansea.happyplant.MessageReceiver");
-        intent.putExtra("CURRSTATUS", plantCurrentStatus);
-        intent.putExtra("PHIDGCONN", isAttached);
-        sendBroadcast(intent);
+            Intent intent = new Intent();
+            intent.setAction("com.uni.swansea.happyplant.MessageReceiver");
+            intent.putExtra("CURRSTATUS", plantCurrentStatus);
+            intent.putExtra("PHIDGCONN", isAttached);
+            sendBroadcast(intent);
     }
 
     class AttachDetachRunnable implements Runnable {
