@@ -198,6 +198,36 @@ public class PlantDatabaseHandler extends SQLiteOpenHelper {
         return statusDataList;
     }
 
+    public List<PlantStatusData> findByTypeGroupedMinute(int statusType) {
+        //"select strftime('%Y-%m-%dT%00:00:00.000', date_time),line, count() from entry group by strftime('%Y-%m-%dT%00:00:00.000', date_time)";//Day
+        PlantStatusData statusData;
+        String query = "select strftime('%Y-%m-%d %H:%M:00', " + COLUMN_TIMESTAMP + "), avg(" + COLUMN_SENSORVALUE + ") from " + TABLE_SENSORVALUES + " where " + COLUMN_SENSORTYPE + " = " + statusType + " group by strftime('%Y-%m-%d %H:%M:00', " + COLUMN_TIMESTAMP + " limit 60)";
+
+        //String query = "Select * FROM " + TABLE_PRODUCTS + " WHERE " + COLUMN_PRODUCTNAME + " =  \"" + productname + "\"";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        List<PlantStatusData> statusDataList = new ArrayList<>();
+
+        while (cursor.moveToNext()) {
+            try {
+                statusData = new PlantStatusData();
+                statusData.setType(statusType);
+                statusData.setTimeStamp(format.parse(cursor.getString(0)));
+                statusData.setValue(Math.round(cursor.getInt(1)));
+                statusDataList.add(statusData);
+            } catch (ParseException e){
+                System.out.println("Failed to parse Date from DB");
+            }
+        }
+        cursor.close();
+        db.close();
+        return statusDataList;
+    }
+
+
     public void addRangeValues(PlantDataRange plantDataRange){
         ContentValues values = new ContentValues();
         values.put(COLUMN_SENSORTYPE, plantDataRange.getType());
