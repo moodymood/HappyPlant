@@ -22,6 +22,16 @@ public class PlantCurrentStatus implements Serializable {
             return false;
     }
 
+    public int sensorIsInBounds(int sensor){
+        if(generalPlantStatusData[sensor].getValue() > generalPlantDataRange[sensor].getMaxValue()) {
+            return 1;
+        }
+        if(generalPlantStatusData[sensor].getValue() < generalPlantDataRange[sensor].getMinValue()) {
+            return -1;
+        }
+        return 0;
+    }
+
 
     public boolean plantIsOK(){
         if(!sensorIsOK(PhidgeMetaInfo.TEMP))
