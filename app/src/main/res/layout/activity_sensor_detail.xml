@@ -99,17 +99,35 @@
             // Graph
             <LinearLayout
                 android:orientation="vertical"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="20dp"
                 android:weightSum="1">
+
+                <TextView android:id="@+id/lastHourChartLabel"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/lastHourChartLabel"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:layout_marginTop="10dp" />
 
                 <com.github.mikephil.charting.charts.LineChart
                     android:id="@+id/lastHourChart"
                     android:layout_width="match_parent"
                     android:layout_height="227dp"
                     android:layout_marginBottom="25dp" />
+
+                <TextView android:id="@+id/lastDayCartLabel"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/lastDayChartLabel"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="center_horizontal" />
 
                 <com.github.mikephil.charting.charts.LineChart
                     android:id="@+id/lastDayChart"

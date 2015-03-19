@@ -97,10 +97,6 @@ public class PlantDatabaseHandler extends SQLiteOpenHelper {
         this.addStatusData(new PlantStatusData(0, 0, oldDate));
         this.addStatusData(new PlantStatusData(1, 0, oldDate));
         this.addStatusData(new PlantStatusData(2, 0, oldDate));
-        oldDate = new Date(System.currentTimeMillis() - 2 * 60 * 1000);
-        this.addStatusData(new PlantStatusData(0, 0, oldDate));
-        this.addStatusData(new PlantStatusData(1, 0, oldDate));
-        this.addStatusData(new PlantStatusData(2, 0, oldDate));
 
         // Put data for the last 24h until the current moment
         for(int i = 1; i<24; i++){

@@ -213,10 +213,10 @@ public class SensorDetailActivity extends ActionBarActivity {
 
         // Creating the graph function
 
-        LineDataSet lastHourDataSet = new LineDataSet(lastHourList, "Last hour values");
+        LineDataSet lastHourDataSet = new LineDataSet(lastHourList, "Recorded values");
         // Setting bigger size
         lastHourDataSet.setLineWidth(2);
-        // Setting all values to int
+        // Setting all Y values to int
         lastHourDataSet.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
@@ -232,7 +232,7 @@ public class SensorDetailActivity extends ActionBarActivity {
 
 
         ArrayList<String> xVals = new ArrayList<String>();
-        for(int i=0; i<60; i++){
+        for(int i=0; i<=60; i++){
             xVals.add(String.valueOf(i));
         }
 
@@ -242,13 +242,13 @@ public class SensorDetailActivity extends ActionBarActivity {
 
         // Setting X and Y options
         lastHourLineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-        lastHourLineChart.getAxisLeft().setAxisMaxValue(PhidgeMetaInfo.maxValues[CURR_SENSOR]);
+        lastHourLineChart.getAxisLeft().setAxisMaxValue(PhidgeMetaInfo.maxValues[CURR_SENSOR]+1);
         lastHourLineChart.getAxisRight().setEnabled(false);
 
         // Centering the legend label
         lastHourLineChart.getLegend().setPosition(Legend.LegendPosition.BELOW_CHART_CENTER);
 
-        // Setting all values to int
+        // Setting all X values to int
         lastHourLineChart.getAxisLeft().setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
@@ -256,8 +256,9 @@ public class SensorDetailActivity extends ActionBarActivity {
             }
         });
 
-        // disabling grid
-        lastHourLineChart.setMinimumWidth(60);
+        // remove grid on touch
+        lastHourLineChart.setHighlightIndicatorEnabled(false);
+
         // Changing description label
         lastHourLineChart.setDescription("Minutes");
 
@@ -284,7 +285,7 @@ public class SensorDetailActivity extends ActionBarActivity {
         }
 
 
-        LineDataSet lastDayDataSet = new LineDataSet(lastDayList, "Last day values");
+        LineDataSet lastDayDataSet = new LineDataSet(lastDayList, "Recorded values");
         // Setting bigger size
         lastDayDataSet.setLineWidth(2);
         // Setting all values to int
@@ -304,7 +305,7 @@ public class SensorDetailActivity extends ActionBarActivity {
 
 
         ArrayList<String> xVals = new ArrayList<>();
-        for(int i=0; i<24; i++){
+        for(int i=0; i<=24; i++){
             xVals.add(String.valueOf(i));
         }
 
@@ -329,6 +330,9 @@ public class SensorDetailActivity extends ActionBarActivity {
 
         // Changing the description label
         lastDayLineChart.setDescription("Hours");
+
+        // remove grid on touch
+        lastDayLineChart.setHighlightIndicatorEnabled(false);
 
         // Refresh the view
         lastDayLineChart.invalidate();
