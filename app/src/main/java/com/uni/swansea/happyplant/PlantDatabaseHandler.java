@@ -20,7 +20,6 @@ import java.util.Locale;
  */
 public class PlantDatabaseHandler extends SQLiteOpenHelper {
     private static PlantDatabaseHandler instance;
-    private Context mCtx;
 
     public static synchronized PlantDatabaseHandler getHelper(Context context)
     {
@@ -60,7 +59,6 @@ public class PlantDatabaseHandler extends SQLiteOpenHelper {
      */
     private PlantDatabaseHandler(Context ctx) {
         super(ctx, DATABASE_NAME, null, DATABASE_VERSION);
-        this.mCtx = ctx;
     }
 
     @Override
