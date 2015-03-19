@@ -2,13 +2,6 @@
 <items version="2" >
 
     <item
-        jar="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/classes.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
-        <dex dex="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/pre-dexed/debug/classes-bd402f2877dc218994dbf404dacf113f6b946360.jar" />
-    </item>
-    <item
         jar="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/libs/internal_impl-21.0.3.jar"
         jumboMode="false"
         revision="21.1.2"
@@ -49,6 +42,20 @@
         revision="21.1.2"
         sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
         <dex dex="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/pre-dexed/debug/classes-aee1a92657da5ed2fae3591b9cc2269679f246bf.jar" />
+    </item>
+    <item
+        jar="/home/moody/.gradle/caches/modules-2/files-2.1/com.github.PhilJay/MPAndroidChart/v2.0.8/a4900cefaf173fb8b416d2fe911394bac5a5ba4/MPAndroidChart-v2.0.8.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="0a4900cefaf173fb8b416d2fe911394bac5a5ba4">
+        <dex dex="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/pre-dexed/debug/MPAndroidChart-v2.0.8-3ffe2420553ff6d2b3d5c921c7208b2d6f594b97.jar" />
+    </item>
+    <item
+        jar="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="/home/moody/AndroidStudioProjects/HappyPlant/app/build/intermediates/pre-dexed/debug/classes-bd402f2877dc218994dbf404dacf113f6b946360.jar" />
     </item>
 
 </items>

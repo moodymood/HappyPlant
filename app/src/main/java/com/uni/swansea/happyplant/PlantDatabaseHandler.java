@@ -20,6 +20,7 @@ import java.util.Locale;
  */
 public class PlantDatabaseHandler extends SQLiteOpenHelper {
     private static PlantDatabaseHandler instance;
+    private Context mCtx;
 
     public static synchronized PlantDatabaseHandler getHelper(Context context)
     {
@@ -49,7 +50,7 @@ public class PlantDatabaseHandler extends SQLiteOpenHelper {
     public static final String COLUMN_MAXVALUE = "maxvalue";
 
     public PlantDatabaseHandler(Context context, String name,
-                       SQLiteDatabase.CursorFactory factory, int version) {
+                                SQLiteDatabase.CursorFactory factory, int version) {
         super(context, DATABASE_NAME, factory, DATABASE_VERSION);
     }
 
@@ -59,6 +60,7 @@ public class PlantDatabaseHandler extends SQLiteOpenHelper {
      */
     private PlantDatabaseHandler(Context ctx) {
         super(ctx, DATABASE_NAME, null, DATABASE_VERSION);
+        this.mCtx = ctx;
     }
 
     @Override
@@ -91,10 +93,18 @@ public class PlantDatabaseHandler extends SQLiteOpenHelper {
     }
 
     public void createValuesDefaults(){
-        Date oldDate = new Date(System.currentTimeMillis() - 5400 * 1000);
+        Date oldDate = new Date(System.currentTimeMillis() - 1 * 60 * 1000);
         this.addStatusData(new PlantStatusData(0, 0, oldDate));
         this.addStatusData(new PlantStatusData(1, 0, oldDate));
         this.addStatusData(new PlantStatusData(2, 0, oldDate));
+
+        // Put data for the last 24h until the current moment
+        for(int i = 1; i<24; i++){
+            oldDate = new Date(System.currentTimeMillis() - i * 60 * 60 * 1000 - 60);
+            //   this.addStatusData(new PlantStatusData(0, 0, oldDate));
+            //    this.addStatusData(new PlantStatusData(1, 0, oldDate));
+            //   this.addStatusData(new PlantStatusData(2, 0, oldDate));
+        }
     }
 
     @Override
@@ -198,10 +208,10 @@ public class PlantDatabaseHandler extends SQLiteOpenHelper {
         return statusDataList;
     }
 
-    public List<PlantStatusData> findByTypeGroupedMinute(int statusType) {
+    public List<PlantStatusData> findByTypeGroupedHourMinutes(int statusType) {
         //"select strftime('%Y-%m-%dT%00:00:00.000', date_time),line, count() from entry group by strftime('%Y-%m-%dT%00:00:00.000', date_time)";//Day
         PlantStatusData statusData;
-        String query = "select strftime('%Y-%m-%d %H:%M:00', " + COLUMN_TIMESTAMP + "), avg(" + COLUMN_SENSORVALUE + ") from " + TABLE_SENSORVALUES + " where " + COLUMN_SENSORTYPE + " = " + statusType + " group by strftime('%Y-%m-%d %H:%M:00', " + COLUMN_TIMESTAMP + " limit 60)";
+        String query = "select strftime('%Y-%m-%d %H:%M:00', " + COLUMN_TIMESTAMP + "), " + COLUMN_SENSORVALUE + " from " + TABLE_SENSORVALUES + " where " + COLUMN_SENSORTYPE + " = " + statusType + " group by strftime('%Y-%m-%d %H:%M:00', " + COLUMN_TIMESTAMP + ") order by " + COLUMN_TIMESTAMP  + "  DESC";
 
         //String query = "Select * FROM " + TABLE_PRODUCTS + " WHERE " + COLUMN_PRODUCTNAME + " =  \"" + productname + "\"";
 
@@ -227,7 +237,6 @@ public class PlantDatabaseHandler extends SQLiteOpenHelper {
         return statusDataList;
     }
 
-
     public void addRangeValues(PlantDataRange plantDataRange){
         ContentValues values = new ContentValues();
         values.put(COLUMN_SENSORTYPE, plantDataRange.getType());
@@ -237,7 +246,7 @@ public class PlantDatabaseHandler extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
-         db.insert(TABLE_SENSORRANGES, null, values);
+        db.insert(TABLE_SENSORRANGES, null, values);
         db.close();
     }
 

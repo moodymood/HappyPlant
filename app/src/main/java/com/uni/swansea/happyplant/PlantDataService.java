@@ -80,9 +80,9 @@ public class PlantDataService extends Service{
                 for( int sensor=0; sensor<3; sensor++) {
                     // Fake data - comment when using the phidget values
                     int fakeValue;
-                    fakeValue = (int) Math.round(Math.random() * 50) + 200;
+                    fakeValue = (int) Math.round(Math.random() * 30);
                     newPlantStatusData[sensor] = new PlantStatusData(sensor, fakeValue, new Date());
-                    dHandler.addStatusData(newPlantStatusData[PhidgeMetaInfo.TEMP]);
+                    dHandler.addStatusData(newPlantStatusData[sensor]);
                     Log.d("PlantDataService", "!!!--Isn't attached logging: " + sensor + "--!!!");
                     // end fake data
                 }

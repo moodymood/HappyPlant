@@ -6,15 +6,27 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.format.Formatter;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.ValueFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -43,7 +55,9 @@ public class SensorDetailActivity extends ActionBarActivity {
         plantCurrentStatus = dHandler.getUpdatedPlantCurrentStatus();
         refreshHeader();
         refreshSensorValues();
-        refreshGraph();
+        //refreshGraph();
+        addLastHourChart();
+        addLastDayChart();
     }
 
 
@@ -64,7 +78,11 @@ public class SensorDetailActivity extends ActionBarActivity {
         plantCurrentStatus = dHandler.getUpdatedPlantCurrentStatus();
         refreshHeader();
         refreshSensorValues();
-        refreshGraph();
+        //refreshGraph();
+        addLastHourChart();
+        addLastDayChart();
+
+
     }
 
 
@@ -76,7 +94,9 @@ public class SensorDetailActivity extends ActionBarActivity {
                 refreshHeader();
                 refreshSensorValues();
                 // Better not to refresh the time everytime?
-                //refreshGraph();
+                addLastHourChart();
+                addLastDayChart();
+
             }
         };
 
@@ -127,68 +147,193 @@ public class SensorDetailActivity extends ActionBarActivity {
         sensorReqValuesText.setText(temp);
     }
 
+    // Create the min value allowed function
+    public LineDataSet getMinValueFunction(int max){
 
-    public void refreshGraph(){
+        ArrayList<Entry> minValueList = new ArrayList<Entry>();
+        minValueList.add(new Entry(plantCurrentStatus.getGeneralPlantDataRange(CURR_SENSOR).getMinValue(), 0));
+        minValueList.add(new Entry(plantCurrentStatus.getGeneralPlantDataRange(CURR_SENSOR).getMinValue(), max));
 
-        List<PlantStatusData> plantStatusData = dHandler.findByTypeGroupedHour(CURR_SENSOR);
+        LineDataSet minValueDataSet = new LineDataSet(minValueList, "Minimum value allowed");
+        // Setting all values to int
+        minValueDataSet.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return String.valueOf((int) value);
+            }
+        });
+        minValueDataSet.setDrawCircles(false);
+        // set colour
+        minValueDataSet.setColor(ColorTemplate.COLORFUL_COLORS[1]);
+        minValueDataSet.setDrawValues(false);
 
-        GraphView todayGraph = (GraphView) findViewById(R.id.graph1);
-        todayGraph.removeAllSeries();
-        todayGraph.getGridLabelRenderer().setNumHorizontalLabels(24);
-        todayGraph.getGridLabelRenderer().setTextSize(25);
-        todayGraph.getViewport().setXAxisBoundsManual(true);
-        todayGraph.getViewport().setMinX(0);
-        todayGraph.getViewport().setMaxX(23);
-        todayGraph.setTitle("Today");
+        return minValueDataSet;
 
-        GraphView yesterdayGraph = (GraphView) findViewById(R.id.graph2);
-        yesterdayGraph.removeAllSeries();
-        yesterdayGraph.getGridLabelRenderer().setNumHorizontalLabels(24);
-        yesterdayGraph.getGridLabelRenderer().setTextSize(25);
-        yesterdayGraph.getViewport().setXAxisBoundsManual(true);
-        yesterdayGraph.getViewport().setMinX(0);
-        yesterdayGraph.getViewport().setMaxX(23);
-        yesterdayGraph.setTitle("Yesterday");
+    }
+
+    // Create the min value allowed function
+    public LineDataSet getMaxValueFunction(int max){
+
+        ArrayList<Entry> maxValueList = new ArrayList<Entry>();
+        maxValueList.add(new Entry(plantCurrentStatus.getGeneralPlantDataRange(CURR_SENSOR).getMaxValue(), 0));
+        maxValueList.add(new Entry(plantCurrentStatus.getGeneralPlantDataRange(CURR_SENSOR).getMaxValue(), max));
+
+        LineDataSet maxValueDataSet = new LineDataSet(maxValueList, "Maximum value allowed");
+        // Setting all values to int
+        maxValueDataSet.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return String.valueOf((int) value);
+            }
+        });
+        maxValueDataSet.setDrawCircles(false);
+        // set colour
+        maxValueDataSet.setColor(ColorTemplate.COLORFUL_COLORS[0]);
+        maxValueDataSet.setDrawValues(false);
+
+        return maxValueDataSet;
+
+    }
 
 
-        DataPoint[] todayDataPoint = new DataPoint[plantStatusData.size()];
-        DataPoint[] yesterdayDataPoint = new DataPoint[24];
-        DataPoint[] minDataPoint = new DataPoint[24];
-        DataPoint[] maxDataPoint = new DataPoint[24];
+    public void addLastHourChart(){
 
+        List<PlantStatusData> plantStatusDataList = dHandler.findByTypeGroupedHourMinutes(CURR_SENSOR);
 
-        for(int i=0; i<plantStatusData.size(); i++){
-            todayDataPoint[i] = new DataPoint(getHourFromDate(plantStatusData.get(i).getTimeStamp()), plantStatusData.get(i).getValue());
+        LineChart lastHourLineChart = (LineChart) findViewById(R.id.lastHourChart);
+
+        // Creating arraylist with all values
+
+        ArrayList<Entry> lastHourList = new ArrayList<Entry>();
+        for(PlantStatusData plantStatusData : plantStatusDataList){
+                Entry e = new Entry(plantStatusData.getValue(), getMinFromDate(plantStatusData.getTimeStamp()));
+                lastHourList.add(e);
         }
 
-        for(int i=0; i<24; i++) {
-            minDataPoint[i] = new DataPoint(i, plantCurrentStatus.getGeneralPlantDataRange(CURR_SENSOR).getMinValue());
-            maxDataPoint[i] = new DataPoint(i, plantCurrentStatus.getGeneralPlantDataRange(CURR_SENSOR).getMaxValue());
-            yesterdayDataPoint[i] = new DataPoint(i, (int) Math.round(Math.random() * 5) + 20);
+
+        // Creating the graph function
+
+        LineDataSet lastHourDataSet = new LineDataSet(lastHourList, "Last hour values");
+        // Setting bigger size
+        lastHourDataSet.setLineWidth(2);
+        // Setting all values to int
+        lastHourDataSet.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return String.valueOf((int) value);
+            }
+        });
+
+        ArrayList<LineDataSet> lastHourDatasets = new ArrayList<LineDataSet>();
+        lastHourDatasets.add(getMinValueFunction(60));
+        lastHourDatasets.add(lastHourDataSet);
+        lastHourDatasets.add(getMaxValueFunction(60));
+
+
+
+        ArrayList<String> xVals = new ArrayList<String>();
+        for(int i=0; i<60; i++){
+            xVals.add(String.valueOf(i));
         }
 
-        LineGraphSeries<DataPoint> todaySeries = new LineGraphSeries<>(todayDataPoint);
-        LineGraphSeries<DataPoint> yesterdaySeries = new LineGraphSeries<>(yesterdayDataPoint);
-
-        LineGraphSeries<DataPoint> minSeries = new LineGraphSeries<>(minDataPoint);
-        LineGraphSeries<DataPoint> maxSeries = new LineGraphSeries<>(maxDataPoint);
+        LineData lastHourLineData = new LineData(xVals, lastHourDatasets);
+        lastHourLineChart.setData(lastHourLineData);
 
 
-        todaySeries.setThickness(5);
-        yesterdaySeries.setThickness(5);
-        minSeries.setThickness(2);
-        maxSeries.setThickness(2);
-        minSeries.setColor(Color.RED);
-        maxSeries.setColor(Color.RED);
+        // Setting X and Y options
+        lastHourLineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        lastHourLineChart.getAxisLeft().setAxisMaxValue(PhidgeMetaInfo.maxValues[CURR_SENSOR]);
+        lastHourLineChart.getAxisRight().setEnabled(false);
 
-        todayGraph.addSeries(todaySeries);
-        todayGraph.addSeries(minSeries);
-        todayGraph.addSeries(maxSeries);
+        // Centering the legend label
+        lastHourLineChart.getLegend().setPosition(Legend.LegendPosition.BELOW_CHART_CENTER);
+
+        // Setting all values to int
+        lastHourLineChart.getAxisLeft().setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return String.valueOf((int) value);
+            }
+        });
+
+        // disabling grid
+        lastHourLineChart.setMinimumWidth(60);
+        // Changing description label
+        lastHourLineChart.setDescription("Minutes");
+
+        lastHourLineChart.fitScreen();
+
+        lastHourLineChart.invalidate();
 
 
-        yesterdayGraph.addSeries(yesterdaySeries);
-        yesterdayGraph.addSeries(minSeries);
-        yesterdayGraph.addSeries(maxSeries);
+    }
+
+
+
+
+    public void addLastDayChart(){
+
+        List<PlantStatusData> plantStatusDataList = dHandler.findByTypeGroupedHour(CURR_SENSOR);
+
+        LineChart lastDayLineChart = (LineChart) findViewById(R.id.lastDayChart);
+
+        ArrayList<Entry> lastDayList = new ArrayList<Entry>();
+        for(PlantStatusData plantStatusData : plantStatusDataList){
+                Entry e = new Entry(plantStatusData.getValue(), getHourFromDate(plantStatusData.getTimeStamp()));
+                lastDayList.add(e);
+        }
+
+
+        LineDataSet lastDayDataSet = new LineDataSet(lastDayList, "Last day values");
+        // Setting bigger size
+        lastDayDataSet.setLineWidth(2);
+        // Setting all values to int
+        lastDayDataSet.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return String.valueOf((int) value);
+            }
+        });
+
+
+        ArrayList<LineDataSet> lastDayDatasets = new ArrayList<>();
+        lastDayDatasets.add(getMinValueFunction(24));
+        lastDayDatasets.add(lastDayDataSet);
+        lastDayDatasets.add(getMaxValueFunction(24));
+
+
+
+        ArrayList<String> xVals = new ArrayList<>();
+        for(int i=0; i<24; i++){
+            xVals.add(String.valueOf(i));
+        }
+
+        LineData lastDayLineData = new LineData(xVals, lastDayDatasets);
+        lastDayLineChart.setData(lastDayLineData);
+
+        // Setting X and Y options
+        lastDayLineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        lastDayLineChart.getAxisLeft().setAxisMaxValue(PhidgeMetaInfo.maxValues[CURR_SENSOR]);
+        lastDayLineChart.getAxisRight().setEnabled(false);
+
+        // Setting all values to int
+        lastDayLineChart.getAxisLeft().setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return String.valueOf((int) value);
+            }
+        });
+
+        // Centering the legend
+        lastDayLineChart.getLegend().setPosition(Legend.LegendPosition.BELOW_CHART_CENTER);
+
+        // Changing the description label
+        lastDayLineChart.setDescription("Hours");
+
+        // Refresh the view
+        lastDayLineChart.invalidate();
+
+
     }
 
 
@@ -205,6 +350,14 @@ public class SensorDetailActivity extends ActionBarActivity {
         Calendar calendar = GregorianCalendar.getInstance();
         calendar.setTime(date);
         int res = calendar.get(Calendar.HOUR_OF_DAY);
+        return res;
+    }
+
+
+    public static int getMinFromDate(Date date){
+        Calendar calendar = GregorianCalendar.getInstance();
+        calendar.setTime(date);
+        int res = calendar.get(Calendar.MINUTE);
         return res;
     }
 
