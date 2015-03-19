@@ -20,8 +20,8 @@ public class PhidgeMetaInfo {
     public static int[] maxValues =
             {
                    80,
-                   660,
-                   95
+                   1000,
+                   100
             };
 
 

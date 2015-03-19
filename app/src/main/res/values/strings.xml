@@ -22,6 +22,9 @@
     <string name="uninit">Uninitialized</string>
     <string name="title_activity_edit_required_value">EditRequiredValueActivity</string>
     <string name="edit">edit</string>
+    <string name="lastHourChartLabel"><b>Last hour</b></string>
+    <string name="lastDayChartLabel"><b>Last day</b></string>
+
 
     // Edit
     <string name="minReqValueText">Select the new\n<b>minimum</b> value\nallowed: </string>
